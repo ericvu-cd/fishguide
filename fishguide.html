@@ -265,7 +265,7 @@ function renderFishCard() {
     if (!f) return;
     const cardEl = document.getElementById('fish-card');
     cardEl.innerHTML = `
-        <img class="fish-photo" src="image/${encodeURIComponent(f.name)}.jpg" alt="${escapeHtml(f.name)}"
+        <img class="fish-photo" src="fishdb/${encodeURIComponent(f.name)}.png" alt="${escapeHtml(f.name)}"
              onerror="handleFishImgError(this)">
         <div class="fish-name-row">
             <div class="fish-name">${escapeHtml(f.name)}</div>
