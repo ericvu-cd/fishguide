@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<script>
+    /* 桌機/寬螢幕自動導向「手機外框」展示版（fishguide-desktop.html），
+       手機直接開（寬度 <=700）完全不受影響、不會跳轉。 */
+    (function() {
+        var params = new URLSearchParams(window.location.search);
+        var inIframe = (window.self !== window.top);
+        if (window.innerWidth > 700 && !inIframe && !params.has('embedded')) {
+            window.location.replace('fishguide-desktop.html');
+        }
+    })();
+</script>
+<title>魚類知識小教室</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --sea-deep: #0d3b4f;
+        --sea: #1a5c78;
+        --sand: #fbf6ec;
+        --green: #2f9e57;
+        --yellow: #d69a1f;
+        --red: #c94f3e;
+        --ink: #22323a;
+        --ink-dim: #6b7a80;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+        margin: 0; height: 100%;
+        background: var(--sand);
+        color: var(--ink);
+        font-family: "Noto Sans TC", sans-serif;
+        overflow: hidden;
+    }
+
+    /* 橫式警告：純 CSS 判斷，跟其他任務同一套做法 */
+    #portrait-warning {
+        display: none; position: fixed; inset: 0; z-index: 999;
+        background: var(--sea-deep); color: #fff;
+        align-items: center; justify-content: center; text-align: center; padding: 20px;
+        font-size: 1.1rem; line-height: 1.8;
+    }
+    @media screen and (orientation: landscape) {
+        #portrait-warning { display: flex; }
+    }
+
+    #app { height: 100%; display: flex; flex-direction: column; }
+
+    #top-bar {
+        flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between;
+        padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+        background: var(--sea-deep); color: #fff;
+    }
+    #top-bar .title { font-size: 1.05rem; font-weight: 900; }
+    #exit-btn {
+        width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer;
+        background: rgba(255,255,255,0.18); color: #fff; font-size: 15px;
+    }
+
+    #screens { flex: 1 1 auto; min-height: 0; position: relative; overflow: hidden; }
+    .screen { position: absolute; inset: 0; display: none; flex-direction: column; }
+    .screen.active { display: flex; }
+
+    /* ── 模式選擇畫面 ── */
+    #screen-home {
+        align-items: center; justify-content: center; gap: 22px; padding: 24px;
+        background: linear-gradient(180deg, var(--sea) 0%, var(--sea-deep) 100%);
+    }
+    #screen-home .home-title { color: #fff; font-size: 1.4rem; font-weight: 900; text-align: center; }
+    #screen-home .home-sub { color: rgba(255,255,255,0.75); font-size: 0.9rem; text-align: center; margin-top: -12px; }
+    .mode-btn {
+        width: 100%; max-width: 320px; padding: 20px; border-radius: 18px; border: none; cursor: pointer;
+        background: #fff; text-align: left; display: flex; align-items: center; gap: 14px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+    .mode-btn .icon { font-size: 2rem; }
+    .mode-btn .label { font-size: 1.05rem; font-weight: 900; color: var(--ink); }
+    .mode-btn .desc { font-size: 0.78rem; color: var(--ink-dim); margin-top: 2px; }
+
+    /* ── 圖鑑瀏覽畫面 ── */
+    #screen-browse { padding: 16px; gap: 12px; }
+    .fish-card {
+        flex: 1 1 auto; min-height: 0; background: #fff; border-radius: 20px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08); overflow-y: auto; padding: 18px;
+    }
+    .fish-photo {
+        width: 100%; aspect-ratio: 4/3; border-radius: 14px; object-fit: cover;
+        background: #e8e2d4; display: block; margin-bottom: 14px;
+    }
+    .fish-photo-fallback {
+        width: 100%; aspect-ratio: 4/3; border-radius: 14px; background: #e8e2d4;
+        display: flex; align-items: center; justify-content: center; font-size: 3rem;
+        margin-bottom: 14px;
+    }
+    .fish-name-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .fish-name { font-size: 1.25rem; font-weight: 900; }
+    .light-badge { font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; color: #fff; white-space: nowrap; }
+    .light-badge.green { background: var(--green); }
+    .light-badge.yellow { background: var(--yellow); }
+    .light-badge.red { background: var(--red); }
+    .fish-meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 14px; margin-bottom: 14px; font-size: 0.85rem; }
+    .fish-meta .k { color: var(--ink-dim); }
+    .fish-meta .v { font-weight: 700; }
+    .fish-desc { font-size: 0.9rem; line-height: 1.7; color: var(--ink); background: #f6f1e6; border-radius: 12px; padding: 12px 14px; }
+
+    .browse-nav { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .nav-btn {
+        flex: 0 0 auto; width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer;
+        background: var(--sea); color: #fff; font-size: 1.3rem;
+    }
+    .nav-btn:disabled { opacity: 0.3; }
+    #browse-counter { flex: 1 1 auto; text-align: center; font-size: 0.85rem; color: var(--ink-dim); }
+
+    /* ── 問答畫面 ── */
+    #screen-quiz { padding: 20px; gap: 16px; align-items: center; justify-content: center; }
+    #quiz-progress { font-size: 0.82rem; color: var(--ink-dim); }
+    #quiz-question-card {
+        width: 100%; max-width: 380px; background: #fff; border-radius: 18px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.1); padding: 22px 20px; text-align: center;
+    }
+    #quiz-fish-name { font-size: 1.2rem; font-weight: 900; margin-bottom: 6px; }
+    #quiz-question-text { font-size: 1rem; color: var(--ink-dim); margin-bottom: 4px; }
+    .quiz-choices { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 10px; }
+    .quiz-choice-btn {
+        padding: 14px; border-radius: 12px; border: 2px solid #ddd3bd; background: #fff; cursor: pointer;
+        font-size: 0.95rem; font-weight: 700; font-family: inherit; color: var(--ink);
+    }
+    .quiz-choice-btn.correct { border-color: var(--green); background: #eafaf0; }
+    .quiz-choice-btn.wrong { border-color: var(--red); background: #fdeceb; }
+    .quiz-choice-btn:disabled { cursor: default; }
+    #quiz-feedback { min-height: 60px; width: 100%; max-width: 380px; text-align: center; }
+    #quiz-feedback .verdict { font-weight: 900; font-size: 1rem; margin-bottom: 4px; }
+    #quiz-feedback .explain { font-size: 0.82rem; color: var(--ink-dim); line-height: 1.6; }
+    #quiz-next-btn {
+        padding: 12px 30px; border-radius: 30px; border: none; cursor: pointer;
+        background: var(--sea); color: #fff; font-weight: 900; font-size: 0.95rem;
+    }
+
+    #screen-quiz-result { align-items: center; justify-content: center; gap: 18px; padding: 24px; }
+    #quiz-result-score { font-size: 2.4rem; font-weight: 900; color: var(--sea-deep); }
+    #quiz-result-label { font-size: 0.95rem; color: var(--ink-dim); }
+    .result-btn-row { display: flex; gap: 12px; }
+    .result-btn {
+        padding: 12px 24px; border-radius: 30px; border: none; cursor: pointer; font-weight: 900; font-size: 0.9rem;
+    }
+    .result-btn.primary { background: var(--sea); color: #fff; }
+    .result-btn.secondary { background: #eee; color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div id="portrait-warning">請將手機轉為直式<br>才能正常使用這個頁面</div>
+
+<div id="app">
+    <div id="top-bar">
+        <div class="title" id="top-bar-title">🐟 魚類知識小教室</div>
+        <button id="exit-btn" onclick="handleExit()">✕</button>
+    </div>
+
+    <div id="screens">
+        <!-- 模式選擇 -->
+        <div class="screen active" id="screen-home">
+            <div class="home-title">🐟 魚類知識小教室</div>
+            <div class="home-sub">遊戲開始前，先來認識台灣海鮮</div>
+            <button class="mode-btn" onclick="goBrowse()">
+                <div class="icon">📖</div>
+                <div>
+                    <div class="label">圖鑑瀏覽</div>
+                    <div class="desc">一種一種看，認識紅黃綠燈、產季、漁法</div>
+                </div>
+            </button>
+            <button class="mode-btn" onclick="goQuiz()">
+                <div class="icon">❓</div>
+                <div>
+                    <div class="label">簡單問答</div>
+                    <div class="desc">隨機出題，測試你認識多少種魚</div>
+                </div>
+            </button>
+        </div>
+
+        <!-- 圖鑑瀏覽 -->
+        <div class="screen" id="screen-browse">
+            <div class="fish-card" id="fish-card"></div>
+            <div class="browse-nav">
+                <button class="nav-btn" id="browse-prev" onclick="browseStep(-1)">‹</button>
+                <div id="browse-counter"></div>
+                <button class="nav-btn" id="browse-next" onclick="browseStep(1)">›</button>
+            </div>
+        </div>
+
+        <!-- 問答進行中 -->
+        <div class="screen" id="screen-quiz">
+            <div id="quiz-progress"></div>
+            <div id="quiz-question-card">
+                <div id="quiz-fish-name"></div>
+                <div id="quiz-question-text"></div>
+            </div>
+            <div class="quiz-choices" id="quiz-choices"></div>
+            <div id="quiz-feedback"></div>
+        </div>
+
+        <!-- 問答結果 -->
+        <div class="screen" id="screen-quiz-result">
+            <div id="quiz-result-score"></div>
+            <div id="quiz-result-label"></div>
+            <div class="result-btn-row">
+                <button class="result-btn primary" onclick="goQuiz()">再測一次</button>
+                <button class="result-btn secondary" onclick="goHome()">回主選單</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   魚類知識小教室 — 獨立任務，不跟平台金幣/徽章/排行榜系統掛勾。
+   跟平台的通訊降到最低限度：只送 exit（讓平台正確清掉 openTaskWindows
+   記錄，行為跟其他任務一致），不送 ready/complete/score（不需要玩家
+   資料，也沒有東西要回報）。
+   ═══════════════════════════════════════════════════════════════════ */
+
+const ZONE_LABEL = { coastal: '近海', pelagic: '遠洋', aquaculture: '養殖' };
+const LIGHT_LABEL = { green: '🟢 建議', yellow: '🟡 想清楚', red: '🔴 避免' };
+
+let fishDB = [];
+let browseIdx = 0;
+let quizQuestions = [];
+let quizIdx = 0;
+let quizScore = 0;
+
+// ── 載入資料庫 ──
+fetch('./fishDB.json')
+    .then(r => r.json())
+    .then(data => { fishDB = data; })
+    .catch(err => {
+        document.getElementById('screen-home').innerHTML =
+            '<div class="home-title">資料載入失敗</div><div class="home-sub">' + err.message + '</div>';
+    });
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function goHome() { showScreen('screen-home'); }
+
+/* ── 圖鑑瀏覽 ── */
+function goBrowse() {
+    browseIdx = 0;
+    showScreen('screen-browse');
+    renderFishCard();
+}
+
+function renderFishCard() {
+    const f = fishDB[browseIdx];
+    if (!f) return;
+    const cardEl = document.getElementById('fish-card');
+    cardEl.innerHTML = `
+        <img class="fish-photo" src="image/${encodeURIComponent(f.name)}.jpg" alt="${escapeHtml(f.name)}"
+             onerror="handleFishImgError(this)">
+        <div class="fish-name-row">
+            <div class="fish-name">${escapeHtml(f.name)}</div>
+            <div class="light-badge ${f.light}">${LIGHT_LABEL[f.light]}</div>
+        </div>
+        <div class="fish-meta">
+            <div><span class="k">產季：</span><span class="v">${escapeHtml(f.season)}</span></div>
+            <div><span class="k">體長：</span><span class="v">約 ${f.size} cm</span></div>
+            <div><span class="k">習性：</span><span class="v">${escapeHtml(f.behavior)}</span></div>
+            <div><span class="k">分布：</span><span class="v">${ZONE_LABEL[f.zone] || f.zone}</span></div>
+            <div style="grid-column:1/-1;"><span class="k">漁法：</span><span class="v">${f.methods.map(escapeHtml).join('、')}</span></div>
+        </div>
+        <div class="fish-desc">${escapeHtml(f.description)}</div>
+    `;
+    document.getElementById('browse-counter').textContent = (browseIdx + 1) + ' / ' + fishDB.length;
+    document.getElementById('browse-prev').disabled = (browseIdx === 0);
+    document.getElementById('browse-next').disabled = (browseIdx === fishDB.length - 1);
+}
+
+// 圖片檔案不存在時（例如照片還沒複製過來），換成一個簡單的佔位圖示，
+// 不要讓畫面留著一個破圖示。用獨立函式處理，比在 onerror 屬性字串裡
+// 巢狀跳脫引號可靠、好讀。
+function handleFishImgError(imgEl) {
+    const fallback = document.createElement('div');
+    fallback.className = 'fish-photo-fallback';
+    fallback.textContent = '🐟';
+    imgEl.replaceWith(fallback);
+}
+
+function browseStep(delta) {
+    const next = browseIdx + delta;
+    if (next < 0 || next >= fishDB.length) return;
+    browseIdx = next;
+    renderFishCard();
+}
+
+/* ── 簡單問答 ──
+   三種題型輪流出：燈號、分布、習性，都是資料庫裡現成的欄位，
+   干擾選項從其他魚種的同一欄位隨機挑，確保是「看起來合理」的錯誤選項。 */
+const QUIZ_LENGTH = 10;
+
+function buildQuizQuestions() {
+    const pool = fishDB.slice();
+    const picked = [];
+    const count = Math.min(QUIZ_LENGTH, pool.length);
+    while (picked.length < count && pool.length) {
+        const i = Math.floor(Math.random() * pool.length);
+        picked.push(pool.splice(i, 1)[0]);
+    }
+    return picked.map(f => {
+        const types = ['light', 'zone', 'behavior'];
+        const type = types[Math.floor(Math.random() * types.length)];
+        if (type === 'light') {
+            return {
+                fish: f, questionText: '這隻魚是哪個燈號？',
+                correct: LIGHT_LABEL[f.light],
+                choices: shuffle([LIGHT_LABEL.green, LIGHT_LABEL.yellow, LIGHT_LABEL.red]),
+                explain: `${f.name}屬於${LIGHT_LABEL[f.light]}。${f.description}`
+            };
+        } else if (type === 'zone') {
+            const correct = ZONE_LABEL[f.zone] || f.zone;
+            const others = Object.values(ZONE_LABEL).filter(v => v !== correct);
+            return {
+                fish: f, questionText: '這隻魚主要分布在哪裡？',
+                correct, choices: shuffle([correct, ...pickN(others, 2)]),
+                explain: `${f.name}主要分布在「${correct}」。${f.description}`
+            };
+        } else {
+            const correct = f.behavior;
+            const other = (correct === '洄游性') ? '定棲性' : '洄游性';
+            return {
+                fish: f, questionText: '這隻魚是洄游性還是定棲性？',
+                correct, choices: shuffle([correct, other]),
+                explain: `${f.name}是「${correct}」。${f.description}`
+            };
+        }
+    });
+}
+
+function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+function pickN(arr, n) { return shuffle(arr).slice(0, n); }
+
+function goQuiz() {
+    quizQuestions = buildQuizQuestions();
+    quizIdx = 0;
+    quizScore = 0;
+    showScreen('screen-quiz');
+    renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+    const q = quizQuestions[quizIdx];
+    document.getElementById('quiz-progress').textContent = `第 ${quizIdx + 1} / ${quizQuestions.length} 題`;
+    document.getElementById('quiz-fish-name').textContent = q.fish.name;
+    document.getElementById('quiz-question-text').textContent = q.questionText;
+    document.getElementById('quiz-feedback').innerHTML = '';
+
+    const choicesEl = document.getElementById('quiz-choices');
+    choicesEl.innerHTML = q.choices.map((c, i) =>
+        `<button class="quiz-choice-btn" data-choice="${escapeHtml(c)}" onclick="answerQuiz(this)">${escapeHtml(c)}</button>`
+    ).join('');
+}
+
+function answerQuiz(btnEl) {
+    const q = quizQuestions[quizIdx];
+    const chosen = btnEl.dataset.choice;
+    const isCorrect = chosen === q.correct;
+    if (isCorrect) quizScore++;
+
+    document.querySelectorAll('.quiz-choice-btn').forEach(b => {
+        b.disabled = true;
+        if (b.dataset.choice === q.correct) b.classList.add('correct');
+        else if (b === btnEl) b.classList.add('wrong');
+    });
+
+    document.getElementById('quiz-feedback').innerHTML = `
+        <div class="verdict" style="color:${isCorrect ? 'var(--green)' : 'var(--red)'};">${isCorrect ? '答對了！' : '答錯了'}</div>
+        <div class="explain">${escapeHtml(q.explain)}</div>
+        <div style="margin-top:12px;"><button id="quiz-next-btn" onclick="nextQuiz()">${quizIdx < quizQuestions.length - 1 ? '下一題' : '看結果'}</button></div>
+    `;
+}
+
+function nextQuiz() {
+    quizIdx++;
+    if (quizIdx >= quizQuestions.length) {
+        showQuizResult();
+    } else {
+        renderQuizQuestion();
+    }
+}
+
+function showQuizResult() {
+    showScreen('screen-quiz-result');
+    document.getElementById('quiz-result-score').textContent = `${quizScore} / ${quizQuestions.length}`;
+    let label = '再多認識幾種魚，下次會更好！';
+    if (quizScore === quizQuestions.length) label = '滿分！你是海鮮永續小達人 🎉';
+    else if (quizScore >= quizQuestions.length * 0.7) label = '很不錯！你對海鮮永續很有概念';
+    document.getElementById('quiz-result-label').textContent = label;
+}
+
+/* ── 跟平台的通訊：只送 exit，不送 ready/complete/score ──
+   做法比照其他任務已驗證過的正確邏輯：iframe 情境下（桌機展示模式）
+   要送給 window.parent 讓外層轉發，不能直接摸 window.opener。 */
+function sendExitToPlatform() {
+    const target = (window.self !== window.top) ? window.parent : window.opener;
+    if (!target) return;
+    target.postMessage({ source: 'culture-task', version: 1, taskId: 'fishguide', type: 'exit' }, '*');
+}
+
+function handleExit() {
+    sendExitToPlatform();
+    // postMessage 是非同步的，延遲一小段時間再關閉，確保訊息有時間走完整趟轉發
+    // （其他任務桌機展示模式下實測過，太快關閉視窗會讓訊息來不及送達平台）。
+    setTimeout(function () { (window.top || window).close(); }, 150);
+}
+</script>
+</body>
+</html>
