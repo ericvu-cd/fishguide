@@ -17,139 +17,292 @@
 <title>魚類知識小教室</title>
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
 <style>
     :root {
-        --sea-deep: #0d3b4f;
-        --sea: #1a5c78;
-        --sand: #fbf6ec;
-        --green: #2f9e57;
-        --yellow: #d69a1f;
-        --red: #c94f3e;
-        --ink: #22323a;
-        --ink-dim: #6b7a80;
+        --green: #58cc02;   --green-d: #58a700;  --green-bg: #d7ffb8;
+        --blue: #1cb0f6;    --blue-d: #1899d6;   --blue-bg: #ddf4ff;  --blue-line: #84d8ff;
+        --red: #ff4b4b;     --red-d: #ea2b2b;    --red-bg: #ffdfe0;
+        --yellow: #ffc800;  --yellow-d: #e5b400; --yellow-bg: #fff4cc;
+        --orange: #ff9600;
+        --line: #e5e5e5;    --line-d: #afafaf;
+        --ink: #3c3c3c;     --ink-dim: #777777;
+        --bg: #ffffff;      --bg-soft: #f7f7f7;
     }
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body {
         margin: 0; height: 100%;
-        background: var(--sand);
-        color: var(--ink);
-        font-family: "Noto Sans TC", sans-serif;
+        background: var(--bg); color: var(--ink);
+        font-family: "Nunito", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+        font-weight: 700;
         overflow: hidden;
     }
+    button { font-family: inherit; }
+    :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 
     /* 橫式警告：純 CSS 判斷，跟其他任務同一套做法 */
     #portrait-warning {
         display: none; position: fixed; inset: 0; z-index: 999;
-        background: var(--sea-deep); color: #fff;
+        background: var(--blue); color: #fff;
         align-items: center; justify-content: center; text-align: center; padding: 20px;
-        font-size: 1.1rem; line-height: 1.8;
+        font-size: 1.1rem; font-weight: 800; line-height: 1.8;
     }
     @media screen and (orientation: landscape) {
         #portrait-warning { display: flex; }
     }
 
-    #app { height: 100%; display: flex; flex-direction: column; }
-
-    #top-bar {
-        flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between;
-        padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
-        background: var(--sea-deep); color: #fff;
-    }
-    #top-bar .title { font-size: 1.05rem; font-weight: 900; }
-    #exit-btn {
-        width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer;
-        background: rgba(255,255,255,0.18); color: #fff; font-size: 15px;
-    }
-
-    #screens { flex: 1 1 auto; min-height: 0; position: relative; overflow: hidden; }
-    .screen { position: absolute; inset: 0; display: none; flex-direction: column; }
+    #app { height: 100%; position: relative; }
+    .screen { position: absolute; inset: 0; display: none; flex-direction: column; background: var(--bg); }
     .screen.active { display: flex; }
 
-    /* ── 模式選擇畫面 ── */
-    #screen-home {
-        align-items: center; justify-content: center; gap: 22px; padding: 24px;
-        background: linear-gradient(180deg, var(--sea) 0%, var(--sea-deep) 100%);
+    /* ── 共用元件 ── */
+    .topbar {
+        flex: 0 0 auto; display: flex; align-items: center; gap: 12px;
+        padding: calc(14px + env(safe-area-inset-top)) 16px 10px;
     }
-    #screen-home .home-title { color: #fff; font-size: 1.4rem; font-weight: 900; text-align: center; }
-    #screen-home .home-sub { color: rgba(255,255,255,0.75); font-size: 0.9rem; text-align: center; margin-top: -12px; }
-    .mode-btn {
-        width: 100%; max-width: 320px; padding: 20px; border-radius: 18px; border: none; cursor: pointer;
-        background: #fff; text-align: left; display: flex; align-items: center; gap: 14px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    .icon-btn {
+        flex: 0 0 auto; width: 40px; height: 40px; border: 0; border-radius: 12px; cursor: pointer;
+        background: none; color: var(--line-d); display: grid; place-items: center;
     }
-    .mode-btn .icon { font-size: 2rem; }
-    .mode-btn .label { font-size: 1.05rem; font-weight: 900; color: var(--ink); }
-    .mode-btn .desc { font-size: 0.78rem; color: var(--ink-dim); margin-top: 2px; }
+    .icon-btn:hover { background: var(--bg-soft); }
+    .icon-btn svg { width: 24px; height: 24px; }
 
-    /* ── 圖鑑瀏覽畫面 ── */
-    #screen-browse { padding: 16px; gap: 12px; }
-    .fish-card {
-        flex: 1 1 auto; min-height: 0; background: #fff; border-radius: 20px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.08); overflow-y: auto; padding: 18px;
+    .btn {
+        --face: var(--green); --edge: var(--green-d); --text: #fff;
+        display: block; width: 100%; border: 0; cursor: pointer;
+        padding: 15px 20px; border-radius: 16px;
+        background: var(--face); color: var(--text);
+        font-size: 1.05rem; font-weight: 900; letter-spacing: 0.06em;
+        box-shadow: 0 4px 0 var(--edge);
+        transition: transform .08s, box-shadow .08s;
     }
-    .fish-photo {
-        width: 100%; aspect-ratio: 4/3; border-radius: 14px; object-fit: cover;
-        background: #e8e2d4; display: block; margin-bottom: 14px;
-    }
-    .fish-photo-fallback {
-        width: 100%; aspect-ratio: 4/3; border-radius: 14px; background: #e8e2d4;
-        display: flex; align-items: center; justify-content: center; font-size: 3rem;
-        margin-bottom: 14px;
-    }
-    .fish-name-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .fish-name { font-size: 1.25rem; font-weight: 900; }
-    .light-badge { font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; color: #fff; white-space: nowrap; }
-    .light-badge.green { background: var(--green); }
-    .light-badge.yellow { background: var(--yellow); }
-    .light-badge.red { background: var(--red); }
-    .fish-meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 14px; margin-bottom: 14px; font-size: 0.85rem; }
-    .fish-meta .k { color: var(--ink-dim); }
-    .fish-meta .v { font-weight: 700; }
-    .fish-desc { font-size: 0.9rem; line-height: 1.7; color: var(--ink); background: #f6f1e6; border-radius: 12px; padding: 12px 14px; }
+    .btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 0 0 var(--edge); }
+    .btn.blue  { --face: var(--blue); --edge: var(--blue-d); }
+    .btn.red   { --face: var(--red);  --edge: var(--red-d); }
+    .btn.ghost { --face: #fff; --edge: var(--line); --text: var(--blue); border: 2px solid var(--line); padding: 13px 18px; }
+    .btn.gray  { --face: var(--line); --edge: var(--line); --text: var(--line-d); }
+    .btn:disabled { --face: var(--line); --edge: var(--line); --text: var(--line-d); cursor: default; box-shadow: none; }
 
-    .browse-nav { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .nav-btn {
-        flex: 0 0 auto; width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer;
-        background: var(--sea); color: #fff; font-size: 1.3rem;
-    }
-    .nav-btn:disabled { opacity: 0.3; }
-    #browse-counter { flex: 1 1 auto; text-align: center; font-size: 0.85rem; color: var(--ink-dim); }
-
-    /* ── 問答畫面 ── */
-    #screen-quiz { padding: 20px; gap: 16px; align-items: center; justify-content: center; }
-    #quiz-progress { font-size: 0.82rem; color: var(--ink-dim); }
-    #quiz-question-card {
-        width: 100%; max-width: 380px; background: #fff; border-radius: 18px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.1); padding: 22px 20px; text-align: center;
-    }
-    #quiz-fish-name { font-size: 1.2rem; font-weight: 900; margin-bottom: 6px; }
-    #quiz-question-text { font-size: 1rem; color: var(--ink-dim); margin-bottom: 4px; }
-    .quiz-choices { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 10px; }
-    .quiz-choice-btn {
-        padding: 14px; border-radius: 12px; border: 2px solid #ddd3bd; background: #fff; cursor: pointer;
-        font-size: 0.95rem; font-weight: 700; font-family: inherit; color: var(--ink);
-    }
-    .quiz-choice-btn.correct { border-color: var(--green); background: #eafaf0; }
-    .quiz-choice-btn.wrong { border-color: var(--red); background: #fdeceb; }
-    .quiz-choice-btn:disabled { cursor: default; }
-    #quiz-feedback { min-height: 60px; width: 100%; max-width: 380px; text-align: center; }
-    #quiz-feedback .verdict { font-weight: 900; font-size: 1rem; margin-bottom: 4px; }
-    #quiz-feedback .explain { font-size: 0.82rem; color: var(--ink-dim); line-height: 1.6; }
-    #quiz-next-btn {
-        padding: 12px 30px; border-radius: 30px; border: none; cursor: pointer;
-        background: var(--sea); color: #fff; font-weight: 900; font-size: 0.95rem;
+    .card {
+        background: #fff; border: 2px solid var(--line); border-bottom-width: 4px; border-radius: 18px;
     }
 
-    #screen-quiz-result { align-items: center; justify-content: center; gap: 18px; padding: 24px; }
-    #quiz-result-score { font-size: 2.4rem; font-weight: 900; color: var(--sea-deep); }
-    #quiz-result-label { font-size: 0.95rem; color: var(--ink-dim); }
-    .result-btn-row { display: flex; gap: 12px; }
-    .result-btn {
-        padding: 12px 24px; border-radius: 30px; border: none; cursor: pointer; font-weight: 900; font-size: 0.9rem;
+    .progress { flex: 1 1 auto; height: 16px; border-radius: 8px; background: var(--line); overflow: hidden; }
+    .progress > i {
+        display: block; height: 100%; width: 0; border-radius: 8px; background: var(--green);
+        position: relative; transition: width .45s cubic-bezier(.3,.9,.3,1);
     }
-    .result-btn.primary { background: var(--sea); color: #fff; }
-    .result-btn.secondary { background: #eee; color: var(--ink); }
+    .progress > i::after {
+        content: ""; position: absolute; left: 8px; right: 8px; top: 4px; height: 4px;
+        border-radius: 2px; background: rgba(255,255,255,.35);
+    }
+
+    .bubble {
+        position: relative; background: #fff; border: 2px solid var(--line); border-radius: 16px;
+        padding: 12px 14px; font-size: 1rem; line-height: 1.55; color: var(--ink);
+    }
+    .bubble::before, .bubble::after {
+        content: ""; position: absolute; left: -9px; top: 22px; width: 14px; height: 14px;
+        background: #fff; border: 2px solid var(--line); border-right: 0; border-top: 0;
+        transform: rotate(45deg);
+    }
+    .bubble::after { border: 0; left: -5px; top: 24px; width: 12px; height: 12px; }
+
+    .badge {
+        display: inline-block; font-size: .78rem; font-weight: 900; padding: 4px 12px; border-radius: 999px;
+        color: #fff; white-space: nowrap; letter-spacing: .04em;
+    }
+    .badge.green  { background: var(--green); }
+    .badge.yellow { background: var(--yellow); color: #5a4300; }
+    .badge.red    { background: var(--red); }
+
+    .mascot { display: block; flex: 0 0 auto; }
+
+    /* ── 首頁 ── */
+    #screen-home { padding: 0 20px calc(20px + env(safe-area-inset-bottom)); overflow-y: auto; }
+    .home-head { display: flex; align-items: center; justify-content: space-between; padding: calc(14px + env(safe-area-inset-top)) 0 6px; }
+    .brand { font-size: 1.5rem; font-weight: 900; color: var(--blue); letter-spacing: .02em; }
+    .home-hero { display: flex; align-items: center; gap: 16px; margin: 34px 0 34px; }
+    .home-hero .bubble { flex: 1 1 auto; font-size: 1.05rem; }
+    .home-hero .mascot { width: 124px; animation: bob 3.2s ease-in-out infinite; }
+    @keyframes bob { 50% { transform: translateY(-6px); } }
+
+    .stat-row { display: flex; gap: 10px; margin-bottom: 22px; }
+    .stat-pill {
+        flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+        font-size: .9rem; font-weight: 800; color: var(--ink-dim);
+    }
+    .stat-pill b { color: var(--ink); font-size: 1.05rem; font-weight: 900; }
+
+    .mode-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+    .mode {
+        display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; cursor: pointer;
+        padding: 14px 16px; color: inherit;
+        transition: transform .08s, border-bottom-width .08s;
+    }
+    .mode:active:not(:disabled) { transform: translateY(2px); border-bottom-width: 2px; }
+    .mode:disabled { opacity: .5; cursor: default; }
+    .mode .tile {
+        flex: 0 0 auto; width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; font-size: 1.9rem;
+    }
+    .mode.study .tile { background: var(--blue-bg); }
+    .mode.play  .tile { background: var(--green-bg); }
+    .mode .label { font-size: 1.15rem; font-weight: 900; }
+    .mode .desc { font-size: .85rem; color: var(--ink-dim); margin-top: 2px; line-height: 1.45; font-weight: 700; }
+    .mode .chev { margin-left: auto; color: var(--line-d); }
+    .mode .chev svg { width: 22px; height: 22px; display: block; }
+
+    .legend { margin-top: auto; padding: 14px 16px; }
+    .legend h3 { margin: 0 0 10px; font-size: .95rem; font-weight: 900; }
+    .legend-row { display: flex; align-items: center; gap: 10px; font-size: .9rem; padding: 4px 0; }
+    .legend-row .dot { width: 14px; height: 14px; border-radius: 50%; flex: 0 0 auto; }
+    .legend-row b { font-weight: 900; min-width: 3em; }
+    .legend-row span { color: var(--ink-dim); }
+
+    /* ── 圖鑑 ── */
+    .chips { flex: 0 0 auto; display: flex; gap: 8px; padding: 4px 16px 12px; overflow-x: auto; scrollbar-width: none; }
+    .chips::-webkit-scrollbar { display: none; }
+    .chip {
+        flex: 0 0 auto; padding: 8px 16px; border-radius: 999px; cursor: pointer;
+        border: 2px solid var(--line); border-bottom-width: 4px; background: #fff;
+        font-size: .9rem; font-weight: 800; color: var(--ink-dim);
+    }
+    .chip[aria-pressed="true"] { border-color: var(--blue-line); background: var(--blue-bg); color: var(--blue); }
+    .chip:active { transform: translateY(2px); border-bottom-width: 2px; }
+
+    .browse-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 16px 16px; }
+    .fish-card.enter-next { animation: slideNext .28s ease-out; }
+    .fish-card.enter-prev { animation: slidePrev .28s ease-out; }
+    @keyframes slideNext { from { opacity: 0; transform: translateX(28px); } }
+    @keyframes slidePrev { from { opacity: 0; transform: translateX(-28px); } }
+
+    .fish-hero {
+        position: relative; width: 100%; aspect-ratio: 16 / 10; border-radius: 20px; overflow: hidden;
+        display: grid; place-items: center;
+    }
+    .fish-hero.green  { background: var(--green-bg); }
+    .fish-hero.yellow { background: var(--yellow-bg); }
+    .fish-hero.red    { background: var(--red-bg); }
+    .fish-hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .fish-hero svg { width: 58%; height: auto; }
+
+    .fish-title { display: flex; align-items: center; gap: 12px; margin: 16px 2px 14px; }
+    .fish-name { font-size: 1.7rem; font-weight: 900; line-height: 1.2; }
+
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .fact { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+    .fact .ico { font-size: 1.5rem; flex: 0 0 auto; }
+    .fact .k { font-size: .75rem; color: var(--ink-dim); font-weight: 800; }
+    .fact .v { font-size: 1rem; font-weight: 900; }
+
+    .methods { margin: 14px 2px 0; }
+    .methods .k { font-size: .8rem; color: var(--ink-dim); font-weight: 800; margin-bottom: 6px; }
+    .method-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .method-tags span {
+        padding: 5px 12px; border-radius: 999px; background: var(--blue-bg); color: var(--blue-d);
+        font-size: .85rem; font-weight: 800;
+    }
+    .method-tags span.ban { background: var(--red-bg); color: var(--red-d); }
+
+    .fish-note { display: flex; align-items: flex-start; gap: 14px; margin: 18px 0 4px; }
+    .fish-note .mascot { width: 54px; margin-top: 4px; }
+    .fish-note .bubble { flex: 1; font-size: .95rem; line-height: 1.7; }
+
+    .browse-nav {
+        flex: 0 0 auto; display: flex; gap: 12px; padding: 12px 16px calc(14px + env(safe-area-inset-bottom));
+        border-top: 2px solid var(--line); background: #fff;
+    }
+    .browse-nav .btn { flex: 1; }
+
+    /* ── 問答 ── */
+    .combo {
+        flex: 0 0 auto; display: flex; align-items: center; gap: 4px; min-width: 48px; justify-content: flex-end;
+        font-size: 1.05rem; font-weight: 900; color: var(--line-d);
+    }
+    .combo.hot { color: var(--orange); }
+    .combo.pop { animation: pop .35s ease-out; }
+    @keyframes pop { 40% { transform: scale(1.35); } }
+
+    .quiz-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 8px 20px 16px; display: flex; flex-direction: column; }
+    .quiz-prompt { font-size: 1.35rem; font-weight: 900; margin: 6px 0 16px; }
+    .quiz-ask { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+    .quiz-ask .mascot { width: 88px; }
+    .quiz-ask .bubble { flex: 1; }
+    .quiz-ask .bubble strong { font-size: 1.25rem; font-weight: 900; display: block; margin-bottom: 2px; }
+
+    .quiz-fish {
+        width: 100%; aspect-ratio: 16 / 7; border-radius: 18px; overflow: hidden; position: relative;
+        display: grid; place-items: center; margin-bottom: 18px; background: var(--blue-bg);
+    }
+    .quiz-fish img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .quiz-fish svg { height: 78%; width: auto; }
+
+    .choices { display: flex; flex-direction: column; gap: 12px; }
+    .choice {
+        display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; cursor: pointer;
+        padding: 14px 16px; border-radius: 16px; background: #fff; color: var(--ink);
+        border: 2px solid var(--line); border-bottom-width: 4px;
+        font-size: 1.05rem; font-weight: 800;
+        transition: transform .08s, border-bottom-width .08s;
+    }
+    .choice:active:not(:disabled) { transform: translateY(2px); border-bottom-width: 2px; }
+    .choice .num {
+        flex: 0 0 auto; width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
+        border: 2px solid var(--line); font-size: .85rem; font-weight: 900; color: var(--ink-dim);
+    }
+    .choice.selected { border-color: var(--blue-line); background: var(--blue-bg); color: var(--blue); }
+    .choice.selected .num { border-color: var(--blue-line); color: var(--blue); }
+    .choice.correct { border-color: var(--green); background: var(--green-bg); color: var(--green-d); }
+    .choice.correct .num { border-color: var(--green); color: var(--green-d); }
+    .choice.wrong { border-color: var(--red); background: var(--red-bg); color: var(--red-d); }
+    .choice.wrong .num { border-color: var(--red); color: var(--red-d); }
+    .choice:disabled { cursor: default; }
+    .choice.shake { animation: shake .35s; }
+    @keyframes shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+
+    .qfooter {
+        flex: 0 0 auto; padding: 14px 20px calc(16px + env(safe-area-inset-bottom));
+        border-top: 2px solid var(--line); background: #fff; transition: background .2s, border-color .2s;
+    }
+    .qfooter.correct { background: var(--green-bg); border-color: transparent; }
+    .qfooter.wrong   { background: var(--red-bg);   border-color: transparent; }
+    .feedback { display: none; margin-bottom: 14px; }
+    .qfooter.correct .feedback, .qfooter.wrong .feedback { display: flex; gap: 12px; align-items: flex-start; animation: rise .28s ease-out; }
+    @keyframes rise { from { opacity: 0; transform: translateY(16px); } }
+    .feedback .mark {
+        flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; background: #fff; display: grid; place-items: center;
+    }
+    .feedback .mark svg { width: 22px; height: 22px; }
+    .feedback .verdict { font-size: 1.2rem; font-weight: 900; }
+    .feedback .explain { font-size: .9rem; line-height: 1.6; margin-top: 2px; font-weight: 700; }
+    .qfooter.correct .verdict, .qfooter.correct .explain { color: var(--green-d); }
+    .qfooter.wrong .verdict, .qfooter.wrong .explain { color: var(--red-d); }
+
+    /* ── 結果 ── */
+    #screen-result { align-items: center; padding: calc(40px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom)); overflow: hidden; }
+    #screen-result .mascot { width: 170px; margin-top: auto; animation: land .7s cubic-bezier(.3,1.5,.5,1); }
+    @keyframes land { from { transform: translateY(-40px) scale(.8); opacity: 0; } }
+    .result-title { font-size: 1.7rem; font-weight: 900; color: var(--yellow-d); margin: 18px 0 6px; text-align: center; }
+    .result-label { font-size: 1rem; color: var(--ink-dim); text-align: center; line-height: 1.6; max-width: 300px; }
+    .result-stats { display: flex; gap: 10px; width: 100%; max-width: 380px; margin: 26px 0 0; }
+    .rstat { --c: var(--yellow); flex: 1; border: 2px solid var(--c); border-radius: 16px; overflow: hidden; }
+    .rstat.g { --c: var(--green); } .rstat.o { --c: var(--orange); }
+    .rstat:not(.g):not(.o) .b { color: var(--yellow-d); }
+    .rstat .h { background: var(--c); color: #fff; text-align: center; font-size: .75rem; font-weight: 900; padding: 5px 0; letter-spacing: .06em; }
+    .rstat .b { text-align: center; padding: 14px 4px; font-size: 1.4rem; font-weight: 900; color: var(--c); background: #fff; }
+    .result-actions { margin-top: auto; padding-top: 24px; width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 12px; }
+
+    #confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    #confetti i {
+        position: absolute; top: -16px; width: 10px; height: 14px; border-radius: 3px;
+        animation: fall linear forwards;
+    }
+    @keyframes fall { to { transform: translateY(950px) rotate(720deg); } }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
 </style>
 </head>
 <body>
@@ -157,194 +310,304 @@
 <div id="portrait-warning">請將手機轉為直式<br>才能正常使用這個頁面</div>
 
 <div id="app">
-    <div id="top-bar">
-        <div class="title" id="top-bar-title">🐟 魚類知識小教室</div>
-        <button id="exit-btn" onclick="handleExit()">✕</button>
-    </div>
 
-    <div id="screens">
-        <!-- 模式選擇 -->
-        <div class="screen active" id="screen-home">
-            <div class="home-title">🐟 魚類知識小教室</div>
-            <div class="home-sub">遊戲開始前，先來認識台灣海鮮</div>
-            <button class="mode-btn" onclick="goBrowse()">
-                <div class="icon">📖</div>
+    <!-- 首頁 -->
+    <section class="screen active" id="screen-home">
+        <div class="home-head">
+            <div class="brand">魚類小教室</div>
+            <button class="icon-btn" onclick="handleExit()" aria-label="離開">
+                <svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" fill="none"/></svg>
+            </button>
+        </div>
+
+        <div class="home-hero">
+            <div id="home-mascot"></div>
+            <div class="bubble">嗨，我是小鰭！開玩遊戲前，先來認識台灣的海鮮吧。</div>
+        </div>
+
+        <div class="stat-row">
+            <div class="card stat-pill">🐟 <b id="stat-count">–</b> 種魚</div>
+            <div class="card stat-pill">🏆 最佳 <b id="stat-best">–</b></div>
+        </div>
+
+        <div class="mode-list">
+            <button class="card mode study" id="mode-browse" onclick="goBrowse()" disabled>
+                <div class="tile">📖</div>
                 <div>
                     <div class="label">圖鑑瀏覽</div>
-                    <div class="desc">一種一種看，認識紅黃綠燈、產季、漁法</div>
+                    <div class="desc">一隻一隻看，學燈號、產季和漁法</div>
                 </div>
+                <div class="chev"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
             </button>
-            <button class="mode-btn" onclick="goQuiz()">
-                <div class="icon">❓</div>
+            <button class="card mode play" id="mode-quiz" onclick="goQuiz()" disabled>
+                <div class="tile">🎯</div>
                 <div>
                     <div class="label">簡單問答</div>
-                    <div class="desc">隨機出題，測試你認識多少種魚</div>
+                    <div class="desc">隨機 10 題，看你認識多少種魚</div>
                 </div>
+                <div class="chev"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
             </button>
         </div>
 
-        <!-- 圖鑑瀏覽 -->
-        <div class="screen" id="screen-browse">
-            <div class="fish-card" id="fish-card"></div>
-            <div class="browse-nav">
-                <button class="nav-btn" id="browse-prev" onclick="browseStep(-1)">‹</button>
-                <div id="browse-counter"></div>
-                <button class="nav-btn" id="browse-next" onclick="browseStep(1)">›</button>
-            </div>
+        <div class="card legend">
+            <h3>燈號怎麼看？</h3>
+            <div class="legend-row"><span class="dot" style="background:var(--green)"></span><b>綠燈</b><span>建議選擇</span></div>
+            <div class="legend-row"><span class="dot" style="background:var(--yellow)"></span><b>黃燈</b><span>想清楚再吃</span></div>
+            <div class="legend-row"><span class="dot" style="background:var(--red)"></span><b>紅燈</b><span>盡量避免</span></div>
         </div>
+    </section>
 
-        <!-- 問答進行中 -->
-        <div class="screen" id="screen-quiz">
-            <div id="quiz-progress"></div>
-            <div id="quiz-question-card">
-                <div id="quiz-fish-name"></div>
-                <div id="quiz-question-text"></div>
-            </div>
-            <div class="quiz-choices" id="quiz-choices"></div>
-            <div id="quiz-feedback"></div>
+    <!-- 圖鑑瀏覽 -->
+    <section class="screen" id="screen-browse">
+        <div class="topbar">
+            <button class="icon-btn" onclick="goHome()" aria-label="回首頁">
+                <svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" fill="none"/></svg>
+            </button>
+            <div class="progress"><i id="browse-progress"></i></div>
+            <div id="browse-counter" style="font-size:.9rem;font-weight:900;color:var(--ink-dim);min-width:52px;text-align:right;"></div>
         </div>
+        <div class="chips" id="browse-chips">
+            <button class="chip" data-f="all" aria-pressed="true">全部</button>
+            <button class="chip" data-f="green" aria-pressed="false">🟢 綠燈</button>
+            <button class="chip" data-f="yellow" aria-pressed="false">🟡 黃燈</button>
+            <button class="chip" data-f="red" aria-pressed="false">🔴 紅燈</button>
+        </div>
+        <div class="browse-body" id="browse-body"><div class="fish-card" id="fish-card"></div></div>
+        <div class="browse-nav">
+            <button class="btn gray" id="browse-prev" onclick="browseStep(-1)">上一隻</button>
+            <button class="btn" id="browse-next" onclick="browseStep(1)">下一隻</button>
+        </div>
+    </section>
 
-        <!-- 問答結果 -->
-        <div class="screen" id="screen-quiz-result">
-            <div id="quiz-result-score"></div>
-            <div id="quiz-result-label"></div>
-            <div class="result-btn-row">
-                <button class="result-btn primary" onclick="goQuiz()">再測一次</button>
-                <button class="result-btn secondary" onclick="goHome()">回主選單</button>
-            </div>
+    <!-- 問答 -->
+    <section class="screen" id="screen-quiz">
+        <div class="topbar">
+            <button class="icon-btn" onclick="goHome()" aria-label="結束問答">
+                <svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" fill="none"/></svg>
+            </button>
+            <div class="progress"><i id="quiz-progress"></i></div>
+            <div class="combo" id="quiz-combo">🔥 <span id="quiz-combo-n">0</span></div>
         </div>
-    </div>
+        <div class="quiz-body">
+            <div class="quiz-prompt">選出正確答案</div>
+            <div class="quiz-ask">
+                <div id="quiz-mascot"></div>
+                <div class="bubble"><strong id="quiz-fish-name"></strong><span id="quiz-question-text"></span></div>
+            </div>
+            <div class="quiz-fish" id="quiz-fish"></div>
+            <div class="choices" id="quiz-choices"></div>
+        </div>
+        <div class="qfooter" id="quiz-footer">
+            <div class="feedback" id="quiz-feedback" role="status" aria-live="polite">
+                <div class="mark" id="quiz-mark"></div>
+                <div>
+                    <div class="verdict" id="quiz-verdict"></div>
+                    <div class="explain" id="quiz-explain"></div>
+                </div>
+            </div>
+            <button class="btn" id="quiz-action" disabled>檢查答案</button>
+        </div>
+    </section>
+
+    <!-- 結果 -->
+    <section class="screen" id="screen-result">
+        <div id="confetti"></div>
+        <div id="result-mascot"></div>
+        <div class="result-title" id="result-title"></div>
+        <div class="result-label" id="result-label"></div>
+        <div class="result-stats">
+            <div class="rstat"><div class="h">得分</div><div class="b" id="rs-score"></div></div>
+            <div class="rstat g"><div class="h">正確率</div><div class="b" id="rs-acc"></div></div>
+            <div class="rstat o"><div class="h">最長連對</div><div class="b" id="rs-streak"></div></div>
+        </div>
+        <div class="result-actions">
+            <button class="btn" onclick="goQuiz()">再測一次</button>
+            <button class="btn ghost" onclick="goHome()">回主選單</button>
+        </div>
+    </section>
 </div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════
    魚類知識小教室 — 獨立任務，不跟平台金幣/徽章/排行榜系統掛勾。
    跟平台的通訊降到最低限度：只送 exit（讓平台正確清掉 openTaskWindows
-   記錄，行為跟其他任務一致），不送 ready/complete/score（不需要玩家
-   資料，也沒有東西要回報）。
+   記錄，行為跟其他任務一致），不送 ready/complete/score。
    ═══════════════════════════════════════════════════════════════════ */
 
 const ZONE_LABEL = { coastal: '近海', pelagic: '遠洋', aquaculture: '養殖' };
+const ZONE_ICON  = { coastal: '🌊', pelagic: '🚢', aquaculture: '🏭' };
 const LIGHT_LABEL = { green: '🟢 建議', yellow: '🟡 想清楚', red: '🔴 避免' };
+const LIGHT_SHORT = { green: '建議', yellow: '想清楚', red: '避免' };
+const LIGHT_FISH_COLOR = { green: '#58cc02', yellow: '#ffc800', red: '#ff4b4b' };
+const QUIZ_LENGTH = 10;
 
 let fishDB = [];
+let browseList = [];
+let browseFilter = 'all';
 let browseIdx = 0;
-let quizQuestions = [];
-let quizIdx = 0;
-let quizScore = 0;
+let quizQuestions = [], quizIdx = 0, quizScore = 0, quizStreak = 0, quizMaxStreak = 0;
+let quizSelected = null, quizAnswered = false;
 
-// ── 載入資料庫 ──
-fetch('./fishDB.json')
-    .then(r => r.json())
-    .then(data => { fishDB = data; })
-    .catch(err => {
-        document.getElementById('screen-home').innerHTML =
-            '<div class="home-title">資料載入失敗</div><div class="home-sub">' + err.message + '</div>';
-    });
+/* ── 插圖 ── */
+function mascot(mood, cls) {
+    const mouth = mood === 'sad'
+        ? '<path d="M97 68 Q103 62 109 68" stroke="#1f2a30" stroke-width="3.5" stroke-linecap="round" fill="none"/>'
+        : '<path d="M97 60 Q103 70 109 60" stroke="#1f2a30" stroke-width="3.5" stroke-linecap="round" fill="none"/>';
+    const eye = mood === 'happy'
+        ? '<path d="M84 46 Q92 36 100 46" stroke="#1f2a30" stroke-width="4" stroke-linecap="round" fill="none"/>'
+        : '<circle cx="92" cy="44" r="12" fill="#fff"/><circle cx="94" cy="45" r="6.5" fill="#1f2a30"/><circle cx="96.5" cy="42.5" r="2.3" fill="#fff"/>';
+    return `<svg class="mascot ${cls || ''}" viewBox="0 0 124 100" aria-hidden="true">
+        <path d="M30 52 L8 30 L8 74 Z" fill="#1899d6" stroke="#1899d6" stroke-width="9" stroke-linejoin="round"/>
+        <path d="M50 24 Q68 4 88 22 Z" fill="#1899d6" stroke="#1899d6" stroke-width="7" stroke-linejoin="round"/>
+        <ellipse cx="68" cy="54" rx="46" ry="34" fill="#1cb0f6"/>
+        <ellipse cx="68" cy="70" rx="32" ry="14" fill="#84d8ff"/>
+        <ellipse cx="62" cy="60" rx="13" ry="8" fill="#1899d6" transform="rotate(-18 62 60)"/>
+        ${eye}
+        <circle cx="106" cy="55" r="5" fill="#ff9aa2" opacity=".75"/>
+        ${mouth}
+    </svg>`;
+}
+
+function fishSilhouette(color) {
+    return `<svg viewBox="0 0 160 100" aria-hidden="true">
+        <path d="M36 50 L10 26 L10 74 Z" fill="${color}" stroke="${color}" stroke-width="9" stroke-linejoin="round"/>
+        <ellipse cx="90" cy="50" rx="56" ry="36" fill="${color}"/>
+        <ellipse cx="90" cy="66" rx="38" ry="14" fill="#fff" opacity=".4"/>
+        <circle cx="120" cy="42" r="9" fill="#fff"/><circle cx="122" cy="43" r="4.5" fill="#1f2a30"/>
+    </svg>`;
+}
+
+function fishImageHTML(f, alt, neutral) {
+    return `<img src="fishdb/${encodeURIComponent(f.name)}.png" alt="${escapeHtml(alt)}" onerror="handleFishImgError(this, '${neutral ? 'neutral' : f.light}')">`;
+}
+// 圖片不存在時換成插畫佔位，不讓畫面出現破圖示
+function handleFishImgError(imgEl, light) {
+    const holder = document.createElement('div');
+    holder.innerHTML = fishSilhouette(LIGHT_FISH_COLOR[light] || '#1cb0f6');
+    imgEl.replaceWith(holder.firstElementChild);
+}
 
 function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ── 載入資料 ── */
+document.getElementById('home-mascot').innerHTML = mascot('normal');
+readBest();
+
+fetch('./fishDB.json')
+    .then(r => r.json())
+    .then(data => {
+        fishDB = data;
+        document.getElementById('stat-count').textContent = data.length;
+        document.getElementById('mode-browse').disabled = false;
+        document.getElementById('mode-quiz').disabled = false;
+    })
+    .catch(err => {
+        document.querySelector('.mode-list').innerHTML =
+            '<div class="card" style="padding:16px;color:var(--red-d);">資料載入失敗：' + escapeHtml(err.message) + '<br>請重新開啟頁面。</div>';
+    });
+
+function readBest() {
+    let best = '–';
+    try { best = localStorage.getItem('fishguide_best') || '–'; } catch (e) {}
+    document.getElementById('stat-best').textContent = best;
+}
+function saveBest(score, total) {
+    try {
+        const prev = parseInt(localStorage.getItem('fishguide_best_n') || '-1', 10);
+        if (score > prev) {
+            localStorage.setItem('fishguide_best_n', String(score));
+            localStorage.setItem('fishguide_best', score + '/' + total);
+        }
+    } catch (e) {}
+    readBest();
 }
 
 function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 }
-
 function goHome() { showScreen('screen-home'); }
 
 /* ── 圖鑑瀏覽 ── */
 function goBrowse() {
-    browseIdx = 0;
+    setFilter('all');
     showScreen('screen-browse');
+}
+
+function setFilter(f) {
+    browseFilter = f;
+    browseList = f === 'all' ? fishDB.slice() : fishDB.filter(x => x.light === f);
+    browseIdx = 0;
+    document.querySelectorAll('#browse-chips .chip').forEach(c =>
+        c.setAttribute('aria-pressed', c.dataset.f === f ? 'true' : 'false'));
     renderFishCard();
+    document.getElementById('browse-body').scrollTop = 0;
 }
+document.getElementById('browse-chips').addEventListener('click', e => {
+    const c = e.target.closest('.chip');
+    if (c) setFilter(c.dataset.f);
+});
 
-function renderFishCard() {
-    const f = fishDB[browseIdx];
+function renderFishCard(dir) {
+    const f = browseList[browseIdx];
     if (!f) return;
-    const cardEl = document.getElementById('fish-card');
-    cardEl.innerHTML = `
-        <img class="fish-photo" src="fishdb/${encodeURIComponent(f.name)}.png" alt="${escapeHtml(f.name)}"
-             onerror="handleFishImgError(this)">
-        <div class="fish-name-row">
+    const isBan = m => m === '禁止捕撈';
+    const el = document.getElementById('fish-card');
+    el.className = 'fish-card' + (dir ? (dir > 0 ? ' enter-next' : ' enter-prev') : '');
+    el.innerHTML = `
+        <div class="fish-hero ${f.light}">${fishImageHTML(f, f.name)}</div>
+        <div class="fish-title">
             <div class="fish-name">${escapeHtml(f.name)}</div>
-            <div class="light-badge ${f.light}">${LIGHT_LABEL[f.light]}</div>
+            <span class="badge ${f.light}">${LIGHT_SHORT[f.light]}</span>
         </div>
-        <div class="fish-meta">
-            <div><span class="k">產季：</span><span class="v">${escapeHtml(f.season)}</span></div>
-            <div><span class="k">體長：</span><span class="v">約 ${f.size} cm</span></div>
-            <div><span class="k">習性：</span><span class="v">${escapeHtml(f.behavior)}</span></div>
-            <div><span class="k">分布：</span><span class="v">${ZONE_LABEL[f.zone] || f.zone}</span></div>
-            <div style="grid-column:1/-1;"><span class="k">漁法：</span><span class="v">${f.methods.map(escapeHtml).join('、')}</span></div>
+        <div class="facts">
+            <div class="card fact"><span class="ico">🗓️</span><div><div class="k">產季</div><div class="v">${escapeHtml(f.season)}</div></div></div>
+            <div class="card fact"><span class="ico">📏</span><div><div class="k">體長</div><div class="v">約 ${f.size} cm</div></div></div>
+            <div class="card fact"><span class="ico">🧭</span><div><div class="k">習性</div><div class="v">${escapeHtml(f.behavior)}</div></div></div>
+            <div class="card fact"><span class="ico">${ZONE_ICON[f.zone] || '🌊'}</span><div><div class="k">分布</div><div class="v">${ZONE_LABEL[f.zone] || escapeHtml(f.zone)}</div></div></div>
         </div>
-        <div class="fish-desc">${escapeHtml(f.description)}</div>
+        <div class="methods">
+            <div class="k">漁法</div>
+            <div class="method-tags">${f.methods.map(m => `<span class="${isBan(m) ? 'ban' : ''}">${escapeHtml(m)}</span>`).join('')}</div>
+        </div>
+        <div class="fish-note">
+            ${mascot('normal')}
+            <div class="bubble">${escapeHtml(f.description)}</div>
+        </div>
     `;
-    document.getElementById('browse-counter').textContent = (browseIdx + 1) + ' / ' + fishDB.length;
-    document.getElementById('browse-prev').disabled = (browseIdx === 0);
-    document.getElementById('browse-next').disabled = (browseIdx === fishDB.length - 1);
-}
-
-// 圖片檔案不存在時（例如照片還沒複製過來），換成一個簡單的佔位圖示，
-// 不要讓畫面留著一個破圖示。用獨立函式處理，比在 onerror 屬性字串裡
-// 巢狀跳脫引號可靠、好讀。
-function handleFishImgError(imgEl) {
-    const fallback = document.createElement('div');
-    fallback.className = 'fish-photo-fallback';
-    fallback.textContent = '🐟';
-    imgEl.replaceWith(fallback);
+    document.getElementById('browse-counter').textContent = (browseIdx + 1) + '/' + browseList.length;
+    document.getElementById('browse-progress').style.width = ((browseIdx + 1) / browseList.length * 100) + '%';
+    const prev = document.getElementById('browse-prev'), next = document.getElementById('browse-next');
+    prev.disabled = (browseIdx === 0);
+    next.disabled = (browseIdx === browseList.length - 1);
 }
 
 function browseStep(delta) {
-    const next = browseIdx + delta;
-    if (next < 0 || next >= fishDB.length) return;
-    browseIdx = next;
-    renderFishCard();
+    const n = browseIdx + delta;
+    if (n < 0 || n >= browseList.length) return;
+    browseIdx = n;
+    renderFishCard(delta);
+    document.getElementById('browse-body').scrollTop = 0;
 }
+
+// 左右滑動換魚
+(function () {
+    const body = document.getElementById('browse-body');
+    let x0 = null, y0 = null;
+    body.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+    body.addEventListener('touchend', e => {
+        if (x0 === null) return;
+        const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+        x0 = null;
+        if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) browseStep(dx < 0 ? 1 : -1);
+    }, { passive: true });
+})();
 
 /* ── 簡單問答 ──
-   三種題型輪流出：燈號、分布、習性，都是資料庫裡現成的欄位，
-   干擾選項從其他魚種的同一欄位隨機挑，確保是「看起來合理」的錯誤選項。 */
-const QUIZ_LENGTH = 10;
-
-function buildQuizQuestions() {
-    const pool = fishDB.slice();
-    const picked = [];
-    const count = Math.min(QUIZ_LENGTH, pool.length);
-    while (picked.length < count && pool.length) {
-        const i = Math.floor(Math.random() * pool.length);
-        picked.push(pool.splice(i, 1)[0]);
-    }
-    return picked.map(f => {
-        const types = ['light', 'zone', 'behavior'];
-        const type = types[Math.floor(Math.random() * types.length)];
-        if (type === 'light') {
-            return {
-                fish: f, questionText: '這隻魚是哪個燈號？',
-                correct: LIGHT_LABEL[f.light],
-                choices: shuffle([LIGHT_LABEL.green, LIGHT_LABEL.yellow, LIGHT_LABEL.red]),
-                explain: `${f.name}屬於${LIGHT_LABEL[f.light]}。${f.description}`
-            };
-        } else if (type === 'zone') {
-            const correct = ZONE_LABEL[f.zone] || f.zone;
-            const others = Object.values(ZONE_LABEL).filter(v => v !== correct);
-            return {
-                fish: f, questionText: '這隻魚主要分布在哪裡？',
-                correct, choices: shuffle([correct, ...pickN(others, 2)]),
-                explain: `${f.name}主要分布在「${correct}」。${f.description}`
-            };
-        } else {
-            const correct = f.behavior;
-            const other = (correct === '洄游性') ? '定棲性' : '洄游性';
-            return {
-                fish: f, questionText: '這隻魚是洄游性還是定棲性？',
-                correct, choices: shuffle([correct, other]),
-                explain: `${f.name}是「${correct}」。${f.description}`
-            };
-        }
-    });
-}
-
+   四種題型：燈號、分布、習性、產季，都是資料庫現成欄位，
+   干擾選項取自其他魚種的同一欄位。 */
 function shuffle(arr) {
     const a = arr.slice();
     for (let i = a.length - 1; i > 0; i--) {
@@ -355,67 +618,167 @@ function shuffle(arr) {
 }
 function pickN(arr, n) { return shuffle(arr).slice(0, n); }
 
+function buildQuizQuestions() {
+    const picked = pickN(fishDB, Math.min(QUIZ_LENGTH, fishDB.length));
+    const seasons = [...new Set(fishDB.map(f => f.season))];
+    return picked.map(f => {
+        const type = ['light', 'zone', 'behavior', 'season'][Math.floor(Math.random() * 4)];
+        if (type === 'light') {
+            return { fish: f, questionText: '是哪個燈號？', correct: LIGHT_LABEL[f.light],
+                choices: [LIGHT_LABEL.green, LIGHT_LABEL.yellow, LIGHT_LABEL.red],
+                explain: `${f.name}屬於${LIGHT_LABEL[f.light]}。${f.description}` };
+        }
+        if (type === 'zone') {
+            const correct = ZONE_LABEL[f.zone] || f.zone;
+            const others = Object.values(ZONE_LABEL).filter(v => v !== correct);
+            return { fish: f, questionText: '主要分布在哪裡？', correct,
+                choices: shuffle([correct, ...pickN(others, 2)]),
+                explain: `${f.name}主要分布在「${correct}」。${f.description}` };
+        }
+        if (type === 'season') {
+            const correct = f.season;
+            return { fish: f, questionText: '什麼時候是產季？', correct,
+                choices: shuffle([correct, ...pickN(seasons.filter(s => s !== correct), 3)]),
+                explain: `${f.name}的產季是「${correct}」。${f.description}` };
+        }
+        const correct = f.behavior;
+        const other = (correct === '洄游性') ? '定棲性' : '洄游性';
+        return { fish: f, questionText: '是洄游性還是定棲性？', correct,
+            choices: shuffle([correct, other]),
+            explain: `${f.name}是「${correct}」。${f.description}` };
+    });
+}
+
 function goQuiz() {
     quizQuestions = buildQuizQuestions();
-    quizIdx = 0;
-    quizScore = 0;
+    quizIdx = 0; quizScore = 0; quizStreak = 0; quizMaxStreak = 0;
+    updateCombo(false);
+    document.getElementById('quiz-progress').style.width = '0%';
     showScreen('screen-quiz');
     renderQuizQuestion();
 }
 
-function renderQuizQuestion() {
-    const q = quizQuestions[quizIdx];
-    document.getElementById('quiz-progress').textContent = `第 ${quizIdx + 1} / ${quizQuestions.length} 題`;
-    document.getElementById('quiz-fish-name').textContent = q.fish.name;
-    document.getElementById('quiz-question-text').textContent = q.questionText;
-    document.getElementById('quiz-feedback').innerHTML = '';
-
-    const choicesEl = document.getElementById('quiz-choices');
-    choicesEl.innerHTML = q.choices.map((c, i) =>
-        `<button class="quiz-choice-btn" data-choice="${escapeHtml(c)}" onclick="answerQuiz(this)">${escapeHtml(c)}</button>`
-    ).join('');
+function updateCombo(pop) {
+    const el = document.getElementById('quiz-combo');
+    document.getElementById('quiz-combo-n').textContent = quizStreak;
+    el.classList.toggle('hot', quizStreak >= 2);
+    el.classList.remove('pop');
+    if (pop) { void el.offsetWidth; el.classList.add('pop'); }
 }
 
-function answerQuiz(btnEl) {
+function renderQuizQuestion() {
     const q = quizQuestions[quizIdx];
-    const chosen = btnEl.dataset.choice;
-    const isCorrect = chosen === q.correct;
-    if (isCorrect) quizScore++;
+    quizSelected = null; quizAnswered = false;
 
-    document.querySelectorAll('.quiz-choice-btn').forEach(b => {
+    document.getElementById('quiz-mascot').innerHTML = mascot('normal');
+    document.getElementById('quiz-fish-name').textContent = q.fish.name;
+    document.getElementById('quiz-question-text').textContent = q.questionText;
+    const hero = document.getElementById('quiz-fish');
+    hero.innerHTML = fishImageHTML(q.fish, q.fish.name, true);
+
+    document.getElementById('quiz-choices').innerHTML = q.choices.map((c, i) =>
+        `<button class="choice" data-choice="${escapeHtml(c)}"><span class="num">${i + 1}</span><span>${escapeHtml(c)}</span></button>`
+    ).join('');
+
+    const footer = document.getElementById('quiz-footer');
+    footer.className = 'qfooter';
+    const act = document.getElementById('quiz-action');
+    act.className = 'btn';
+    act.textContent = '檢查答案';
+    act.disabled = true;
+}
+
+document.getElementById('quiz-choices').addEventListener('click', e => {
+    const btn = e.target.closest('.choice');
+    if (!btn || quizAnswered) return;
+    document.querySelectorAll('#quiz-choices .choice').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    quizSelected = btn;
+    document.getElementById('quiz-action').disabled = false;
+});
+
+document.getElementById('quiz-action').addEventListener('click', () => {
+    if (!quizAnswered) checkAnswer(); else nextQuiz();
+});
+
+const ICON_OK = '<svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5" stroke="#58a700" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+const ICON_NO = '<svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="#ea2b2b" stroke-width="4" stroke-linecap="round" fill="none"/></svg>';
+
+function checkAnswer() {
+    if (!quizSelected) return;
+    const q = quizQuestions[quizIdx];
+    quizAnswered = true;
+    const isCorrect = quizSelected.dataset.choice === q.correct;
+
+    document.querySelectorAll('#quiz-choices .choice').forEach(b => {
         b.disabled = true;
+        b.classList.remove('selected');
         if (b.dataset.choice === q.correct) b.classList.add('correct');
-        else if (b === btnEl) b.classList.add('wrong');
     });
+    if (isCorrect) {
+        quizScore++; quizStreak++;
+        quizMaxStreak = Math.max(quizMaxStreak, quizStreak);
+    } else {
+        quizSelected.classList.add('wrong', 'shake');
+        quizStreak = 0;
+    }
+    updateCombo(isCorrect);
+    document.getElementById('quiz-mascot').innerHTML = mascot(isCorrect ? 'happy' : 'sad');
+    document.getElementById('quiz-progress').style.width = ((quizIdx + 1) / quizQuestions.length * 100) + '%';
 
-    document.getElementById('quiz-feedback').innerHTML = `
-        <div class="verdict" style="color:${isCorrect ? 'var(--green)' : 'var(--red)'};">${isCorrect ? '答對了！' : '答錯了'}</div>
-        <div class="explain">${escapeHtml(q.explain)}</div>
-        <div style="margin-top:12px;"><button id="quiz-next-btn" onclick="nextQuiz()">${quizIdx < quizQuestions.length - 1 ? '下一題' : '看結果'}</button></div>
-    `;
+    document.getElementById('quiz-footer').className = 'qfooter ' + (isCorrect ? 'correct' : 'wrong');
+    document.getElementById('quiz-mark').innerHTML = isCorrect ? ICON_OK : ICON_NO;
+    document.getElementById('quiz-verdict').textContent = isCorrect ? '答對了！' : '答錯了';
+    document.getElementById('quiz-explain').textContent = q.explain;
+
+    const act = document.getElementById('quiz-action');
+    act.className = 'btn' + (isCorrect ? '' : ' red');
+    act.textContent = quizIdx < quizQuestions.length - 1 ? '繼續' : '看結果';
+    act.disabled = false;
 }
 
 function nextQuiz() {
     quizIdx++;
-    if (quizIdx >= quizQuestions.length) {
-        showQuizResult();
-    } else {
-        renderQuizQuestion();
-    }
+    if (quizIdx >= quizQuestions.length) showQuizResult();
+    else { renderQuizQuestion(); document.querySelector('.quiz-body').scrollTop = 0; }
 }
 
 function showQuizResult() {
-    showScreen('screen-quiz-result');
-    document.getElementById('quiz-result-score').textContent = `${quizScore} / ${quizQuestions.length}`;
+    const total = quizQuestions.length;
+    const ratio = quizScore / total;
+    showScreen('screen-result');
+    document.getElementById('result-mascot').innerHTML = mascot(ratio >= 0.7 ? 'happy' : 'normal');
+    document.getElementById('result-title').textContent = quizScore === total ? '滿分！' : '練習完成！';
     let label = '再多認識幾種魚，下次會更好！';
-    if (quizScore === quizQuestions.length) label = '滿分！你是海鮮永續小達人 🎉';
-    else if (quizScore >= quizQuestions.length * 0.7) label = '很不錯！你對海鮮永續很有概念';
-    document.getElementById('quiz-result-label').textContent = label;
+    if (quizScore === total) label = '你是海鮮永續小達人！';
+    else if (ratio >= 0.7) label = '很不錯！你對海鮮永續很有概念。';
+    document.getElementById('result-label').textContent = label;
+    document.getElementById('rs-score').textContent = quizScore + '/' + total;
+    document.getElementById('rs-acc').textContent = Math.round(ratio * 100) + '%';
+    document.getElementById('rs-streak').textContent = quizMaxStreak;
+    saveBest(quizScore, total);
+    if (ratio >= 0.7) confetti();
+}
+
+function confetti() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const box = document.getElementById('confetti');
+    const colors = ['#58cc02', '#1cb0f6', '#ffc800', '#ff4b4b', '#ff9600'];
+    box.innerHTML = '';
+    for (let i = 0; i < 40; i++) {
+        const p = document.createElement('i');
+        p.style.left = Math.random() * 100 + '%';
+        p.style.background = colors[i % colors.length];
+        p.style.animationDuration = (2 + Math.random() * 1.8) + 's';
+        p.style.animationDelay = (Math.random() * 0.6) + 's';
+        box.appendChild(p);
+    }
+    setTimeout(() => { box.innerHTML = ''; }, 4500);
 }
 
 /* ── 跟平台的通訊：只送 exit，不送 ready/complete/score ──
-   做法比照其他任務已驗證過的正確邏輯：iframe 情境下（桌機展示模式）
-   要送給 window.parent 讓外層轉發，不能直接摸 window.opener。 */
+   iframe 情境下（桌機展示模式）要送給 window.parent 讓外層轉發，
+   不能直接摸 window.opener。 */
 function sendExitToPlatform() {
     const target = (window.self !== window.top) ? window.parent : window.opener;
     if (!target) return;
@@ -425,7 +788,6 @@ function sendExitToPlatform() {
 function handleExit() {
     sendExitToPlatform();
     // postMessage 是非同步的，延遲一小段時間再關閉，確保訊息有時間走完整趟轉發
-    // （其他任務桌機展示模式下實測過，太快關閉視窗會讓訊息來不及送達平台）。
     setTimeout(function () { (window.top || window).close(); }, 150);
 }
 </script>
