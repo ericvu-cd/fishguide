@@ -198,14 +198,9 @@
     .m.now { outline: 3px solid var(--orange); outline-offset: 1px; }
     .months-note { margin: 8px 2px 0; font-size: .82rem; color: var(--ink-dim); line-height: 1.5; }
 
-    .info-list { padding: 4px 16px; }
-    .info-row { display: flex; gap: 14px; padding: 14px 0; border-bottom: 2px solid var(--line); }
-    .info-row:last-child { border-bottom: 0; }
-        .info-row .k { font-size: .82rem; color: var(--ink-dim); font-weight: 800; }
-    .info-row .v { font-size: 1.15rem; font-weight: 900; margin: 1px 0 3px; }
-    .season-icons { display: flex; gap: 8px; margin: 6px 0 6px; }
-    .si { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; font-size: 1.6rem; background: var(--bg-soft); border: 2px solid var(--line); filter: grayscale(1); opacity: .35; }
-    .si.on { background: var(--blue-bg); border-color: var(--blue-line); filter: none; opacity: 1; }
+    .info-list { padding: 2px 16px; }
+    .info-row { display: flex; gap: 14px; padding: 12px 0; }
+        .info-row .v { font-size: 1.15rem; font-weight: 900; margin: 1px 0 3px; }
     .info-row .note { font-size: .92rem; line-height: 1.6; color: var(--ink-dim); }
 
     .method-list { display: flex; flex-direction: column; gap: 10px; }
@@ -673,14 +668,8 @@ function seasonBlock(f) {
         <div class="months" role="img" aria-label="${escapeHtml(f.season)}盛產">${cells}</div>
         <div class="months-note">藍色是盛產月份，橘框是這個月。春 3–5 月、夏 6–8 月、秋 9–11 月、冬 12–2 月，實際依年份和海況會有出入。</div>` };
 }
-const SEASON_ICON = { '春': '🌸', '夏': '☀️', '秋': '🍂', '冬': '❄️' };
-function seasonIconsHTML(f) {
-    const all = f.season === '全年';
-    return `<div class="season-icons" role="img" aria-label="${escapeHtml(f.season)}">` +
-        ['春', '夏', '秋', '冬'].map(k => `<span class="si${all || f.season.includes(k) ? ' on' : ''}">${SEASON_ICON[k]}</span>`).join('') + '</div>';
-}
-function infoRow(k, v, note) {
-    return `<div class="info-row"><div><div class="k">${k}</div><div class="v">${v}</div>${note ? `<div class="note">${note}</div>` : ''}</div></div>`;
+function infoCard(title, v, note) {
+    return `<div class="sec"><h3>${title}</h3><div class="card info-list"><div class="info-row"><div><div class="v">${v}</div>${note ? `<div class="note">${note}</div>` : ''}</div></div></div></div>`;
 }
 /* 推薦替代魚：只從綠燈魚挑，比「季節（月份有重疊）、習性、分布」三項，
    符合越多越前面；同分數的人太多、名額放不下時，才在那一群裡隨機挑。 */
@@ -729,14 +718,9 @@ function fishDetailHTML(f) {
 
         <div class="sec"><h3>什麼時候盛產</h3>${season.html}</div>
 
-        <div class="sec"><h3>基本資料</h3>
-            <div class="card info-list">
-                ${infoRow('產季', seasonIconsHTML(f), '亮起來的是產季。當季在地買，通常比較容易買到，也比較減碳。')}
-                ${infoRow('體長', sizeNote(f.size), '')}
-                ${infoRow('習性', escapeHtml(f.behavior), escapeHtml(BEHAVIOR_NOTE[f.behavior] || ''))}
-                ${infoRow('分布', ZONE_LABEL[f.zone] || escapeHtml(f.zone), escapeHtml(ZONE_NOTE[f.zone] || ''))}
-            </div>
-        </div>
+        ${infoCard('體長', sizeNote(f.size), '')}
+        ${infoCard('習性', escapeHtml(f.behavior), escapeHtml(BEHAVIOR_NOTE[f.behavior] || ''))}
+        ${infoCard('分布', ZONE_LABEL[f.zone] || escapeHtml(f.zone), escapeHtml(ZONE_NOTE[f.zone] || ''))}
 
         <div class="sec"><h3>怎麼捕來的</h3>
             <div class="sub">「友善」是指一般情形下對海洋和其他生物的影響小，實際會依作業規模與方式不同。</div>
