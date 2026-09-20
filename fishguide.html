@@ -14,7 +14,7 @@
         }
     })();
 </script>
-<title>海鮮123</title>
+<title>食魚小教室</title>
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -150,11 +150,6 @@
     .sf svg { width: 60px; height: auto; display: block; margin: 2px auto 6px; }
     .sf .n { font-size: .95rem; font-weight: 900; }
 
-    .legend-pills { display: flex; gap: 8px; }
-    .lp { flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 10px; }
-    .lp .dot { width: 14px; height: 14px; border-radius: 50%; flex: 0 0 auto; }
-    .lp b { display: block; font-size: .95rem; font-weight: 900; line-height: 1.2; }
-    .lp span { font-size: .78rem; color: var(--ink-dim); }
 
     /* ── 圖鑑（直式手機：一欄、大字、拇指區按鈕） ── */
     .browse-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 16px 24px; }
@@ -232,9 +227,6 @@
     .alt .an { font-size: 1.1rem; font-weight: 900; }
     .alt .ad { font-size: .85rem; color: var(--ink-dim); }
     .alt .ab { flex: 1; min-width: 0; }
-    .match { display: flex; gap: 6px; margin-top: 6px; }
-    .mp { font-size: .75rem; font-weight: 900; padding: 2px 9px; border-radius: 999px; background: var(--bg-soft); color: var(--line-d); }
-    .mp.on { background: var(--green-bg); color: var(--green-d); }
     .alt svg { margin-left: auto; width: 20px; height: 20px; color: var(--line-d); flex: 0 0 auto; }
 
     .browse-nav { flex: 0 0 auto; display: flex; gap: 12px; padding: 12px 16px calc(14px + env(safe-area-inset-bottom)); border-top: 2px solid var(--line); background: #fff; }
@@ -332,7 +324,7 @@
             <i class="bub" style="left:58%;width:18px;height:18px;animation-delay:1.5s"></i>
             <i class="bub" style="left:74%;width:10px;height:10px;animation-delay:5s;animation-duration:10s"></i>
             <i class="bub" style="left:90%;width:14px;height:14px;animation-delay:7s"></i>
-            <div class="brand">海鮮123</div>
+            <div class="brand">食魚小教室</div>
             <div class="tagline">認識台灣海鮮，吃得更永續</div>
             <div class="sea-mascot">
                 <div id="home-mascot"></div>
@@ -356,15 +348,6 @@
             <div class="home-sec" id="home-season" hidden>
                 <h3><span id="home-season-title"></span><small>點一下看明細</small></h3>
                 <div class="season-scroller" id="home-season-list"></div>
-            </div>
-
-            <div class="home-sec">
-                <h3>燈號怎麼看？</h3>
-                <div class="legend-pills">
-                    <div class="card lp"><span class="dot" style="background:var(--green)"></span><div><b>綠燈</b><span>建議選擇</span></div></div>
-                    <div class="card lp"><span class="dot" style="background:var(--yellow)"></span><div><b>黃燈</b><span>想清楚再吃</span></div></div>
-                    <div class="card lp"><span class="dot" style="background:var(--red)"></span><div><b>紅燈</b><span>盡量避免</span></div></div>
-                </div>
             </div>
         </div>
     </section>
@@ -453,7 +436,7 @@
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════
-   海鮮123 — 獨立任務，不跟平台金幣/徽章/排行榜系統掛勾。
+   食魚小教室 — 獨立任務，不跟平台金幣/徽章/排行榜系統掛勾。
    跟平台的通訊降到最低限度：只送 exit，不送 ready/complete/score。
    ═══════════════════════════════════════════════════════════════════ */
 
@@ -480,14 +463,13 @@ const METHOD_INFO = {
     '籠具':   { impact: 'good',  d: '在海底放置誘餌籠，魚蝦蟹自己游進去，不要的可以放回海裡。' },
     '定置網': { impact: 'watch', d: '固定在沿岸魚群必經路線上的大型陷阱網，魚游進去就出不來，收網時可以挑選並放走不要的。' },
     '圍網':   { impact: 'watch', d: '漁船繞著魚群把網圍起再收攏，常用來捕群游的魚，一次能捕到很多。' },
-    '棒受網': { impact: 'watch', d: '夜間用燈光引來魚群，再用大網從水中撈起。' },
-    '追逐網': { impact: 'watch', d: '駛近表層魚群，再張網圍捕的作業方式。' },
+    '棒受網': { impact: 'good',  d: '夜間用燈光引來魚群，再用大網從水中撈起。' },
     '延繩釣': { impact: 'watch', d: '一條很長的主繩掛上許多釣鉤，放在海中等魚上鉤，可能誤釣到海龜、海鳥或鯊魚。' },
     '底刺網': { impact: 'watch', d: '把刺網放在海底，卡住貼近海床的魚類，容易誤捕其他底棲生物。' },
     '流刺網': { impact: 'heavy', d: '網子垂直懸在水中隨海流漂，魚游過會被網眼卡住，容易誤捕其他生物；遺失的漁網還會變成「鬼網」繼續捕魚。' },
     '拖網':   { impact: 'heavy', d: '漁船拖著大網前進，把沿途的魚一起撈起，容易混獲其他魚種。' },
     '底拖網': { impact: 'heavy', d: '拖網貼著海底拖行，可能刮傷海底棲地，也容易撈到不要的生物。' },
-    '養殖':   { impact: 'farm',  d: '在池塘或箱網裡人工飼養，不直接捕撈野生族群，但要留意飼料與水質。' },
+    '養殖':   { impact: 'farm',  d: '在池塘或箱網人工飼養，不直接捕野生成魚，但飼料常含野生小魚做的魚粉，鰻苗也取自野外。' },
     '禁止捕撈': { impact: 'ban', d: '依規定不得捕撈，請不要購買或食用。' }
 };
 const IMPACT_LABEL = { good: '友善', watch: '需留意', heavy: '不友善', ban: '禁止', farm: '人工養殖' };
@@ -732,9 +714,8 @@ function fishDetailHTML(f) {
     if (f.light !== 'green') {
         const picks = pickAlternatives(f);
         if (picks.length) {
-            const pill = (on, t) => `<span class="mp${on ? ' on' : ''}">${t}</span>`;
             alts = `<div class="sec"><h3>可以改吃這些</h3><div class="sub">依季節、習性、分布挑選，符合越多越前面。</div><div class="alts">` +
-                picks.map(({ fish: a, m }) => `<button class="card alt" data-id="${a.id}"><span class="dot"></span><span class="ab"><div class="an">${escapeHtml(a.name)}</div><div class="ad">產季 ${escapeHtml(a.season)}・${escapeHtml(a.behavior)}・${ZONE_LABEL[a.zone] || escapeHtml(a.zone)}</div><div class="match">${pill(m.season, '同季節')}${pill(m.behavior, '同習性')}${pill(m.zone, '同分布')}</div></span><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></button>`).join('') +
+                picks.map(({ fish: a }) => `<button class="card alt" data-id="${a.id}"><span class="dot"></span><span class="ab"><div class="an">${escapeHtml(a.name)}</div><div class="ad">產季 ${escapeHtml(a.season)}・${escapeHtml(a.behavior)}・${ZONE_LABEL[a.zone] || escapeHtml(a.zone)}</div></span><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></button>`).join('') +
                 '</div></div>';
         }
     }
@@ -750,7 +731,7 @@ function fishDetailHTML(f) {
 
         <div class="sec"><h3>基本資料</h3>
             <div class="card info-list">
-                ${infoRow('產季', seasonIconsHTML(f), '亮起來的是產季，同一種魚在產季買，通常比較容易買到、價格也比較穩。')}
+                ${infoRow('產季', seasonIconsHTML(f), '亮起來的是產季。當季在地買，通常比較容易買到，也比較減碳。')}
                 ${infoRow('體長', sizeNote(f.size), '')}
                 ${infoRow('習性', escapeHtml(f.behavior), escapeHtml(BEHAVIOR_NOTE[f.behavior] || ''))}
                 ${infoRow('分布', ZONE_LABEL[f.zone] || escapeHtml(f.zone), escapeHtml(ZONE_NOTE[f.zone] || ''))}
