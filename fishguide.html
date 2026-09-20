@@ -14,7 +14,7 @@
         }
     })();
 </script>
-<title>食魚小教室</title>
+<title>友魚小學堂</title>
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -110,11 +110,11 @@
     .sea {
         position: relative; flex: 0 0 auto; overflow: hidden; color: #fff;
         padding: calc(10px + env(safe-area-inset-top)) 20px 0;
-        background: linear-gradient(180deg, #5fd0ff 0%, #1cb0f6 52%, #1899d6 100%);
+        background: linear-gradient(180deg, #0d6aa8 0%, #1899d6 45%, #6fd6ff 100%);
     }
     .sea .exit { position: absolute; top: calc(8px + env(safe-area-inset-top)); right: 8px; color: rgba(255,255,255,.75); z-index: 2; }
     .sea .exit:active { background: rgba(255,255,255,.15); }
-    .brand { position: relative; z-index: 1; margin: 34px 0 0; font-size: 2.7rem; font-weight: 900; letter-spacing: .04em; line-height: 1.1; text-shadow: 0 4px 0 #1181b8; }
+    .brand { position: relative; z-index: 1; margin: 34px 0 0; font-size: 2.7rem; font-weight: 900; letter-spacing: .04em; line-height: 1.1; text-shadow: 0 4px 0 #084c7c; }
     .tagline { position: relative; z-index: 1; margin-top: 6px; font-size: .95rem; font-weight: 800; opacity: .95; }
     .sea-mascot { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; margin: 26px 0 0; padding-bottom: 38px; }
     .sea-mascot .mascot { width: 88px; }
@@ -124,6 +124,7 @@
     .sea .bub { position: absolute; bottom: -20px; border-radius: 50%; border: 2px solid rgba(255,255,255,.55); background: rgba(255,255,255,.14); animation: rise 9s linear infinite; }
     @keyframes rise { to { transform: translateY(-330px); opacity: 0; } }
 
+    .home-foot { margin-top: auto; padding: 8px 20px calc(18px + env(safe-area-inset-bottom)); text-align: center; font-size: .78rem; font-weight: 700; color: var(--ink-dim); }
     .home-main { padding: 6px 20px calc(24px + env(safe-area-inset-bottom)); }
     .tiles { display: flex; gap: 12px; }
     .tile-btn {
@@ -319,7 +320,7 @@
             <i class="bub" style="left:58%;width:18px;height:18px;animation-delay:1.5s"></i>
             <i class="bub" style="left:74%;width:10px;height:10px;animation-delay:5s;animation-duration:10s"></i>
             <i class="bub" style="left:90%;width:14px;height:14px;animation-delay:7s"></i>
-            <div class="brand">食魚小教室</div>
+            <div class="brand">友魚小學堂</div>
             <div class="tagline">認識台灣海鮮，吃得更永續</div>
             <div class="sea-mascot">
                 <div id="home-mascot"></div>
@@ -345,6 +346,7 @@
                 <div class="season-scroller" id="home-season-list"></div>
             </div>
         </div>
+        <div class="home-foot">© 2026 友魚小學堂 苗栗縣在地文化推廣協會</div>
     </section>
 
     <!-- 圖鑑 -->
@@ -431,7 +433,7 @@
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════
-   食魚小教室 — 獨立任務，不跟平台金幣/徽章/排行榜系統掛勾。
+   友魚小學堂 — 獨立任務，不跟平台金幣/徽章/排行榜系統掛勾。
    跟平台的通訊降到最低限度：只送 exit，不送 ready/complete/score。
    ═══════════════════════════════════════════════════════════════════ */
 
