@@ -14,7 +14,7 @@
         }
     })();
 </script>
-<title>魚類知識小教室</title>
+<title>海鮮123</title>
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -110,13 +110,10 @@
     .home-head { display: flex; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top)) 0 0; }
     .brand { font-size: 1.5rem; font-weight: 900; color: var(--blue); letter-spacing: .02em; }
     .home-head .icon-btn { margin-right: -10px; }
-    .home-hero { display: flex; align-items: center; gap: 16px; margin: 28px 0 28px; }
-    .home-hero .bubble { flex: 1 1 auto; font-size: 1.05rem; }
-    .home-hero .mascot { width: 124px; animation: bob 3.2s ease-in-out infinite; }
+    .home-hero { display: flex; align-items: center; gap: 14px; margin: 26px 0 30px; }
+    .home-hero .bubble { flex: 1 1 auto; font-size: .88rem; line-height: 1.55; padding: 10px 12px; }
+    .home-hero .mascot { width: 84px; animation: bob 3.2s ease-in-out infinite; }
     @keyframes bob { 50% { transform: translateY(-6px); } }
-    .stat-row { display: flex; gap: 10px; margin-bottom: 20px; }
-    .stat-pill { flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 12px; font-size: .9rem; font-weight: 800; color: var(--ink-dim); }
-    .stat-pill b { color: var(--ink); font-size: 1.05rem; font-weight: 900; }
     .mode-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 22px; }
     .mode { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; cursor: pointer; padding: 16px; color: inherit; font: inherit; transition: transform .08s, border-bottom-width .08s; }
     .mode:active:not(:disabled) { transform: translateY(2px); border-bottom-width: 2px; }
@@ -137,11 +134,11 @@
 
     /* ── 圖鑑（直式手機：一欄、大字、拇指區按鈕） ── */
     .browse-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 16px 24px; }
-    .chips { display: flex; gap: 8px; padding: 2px 0 12px; overflow-x: auto; scrollbar-width: none; }
+    .chips { display: flex; gap: 6px; padding: 0 0 10px; overflow-x: auto; scrollbar-width: none; }
     .chips::-webkit-scrollbar { display: none; }
-    .chip { flex: 0 0 auto; min-height: 44px; padding: 8px 16px; border-radius: 999px; cursor: pointer; border: 2px solid var(--line); border-bottom-width: 4px; background: #fff; font-size: .95rem; font-weight: 800; color: var(--ink-dim); }
+    .chip { flex: 0 0 auto; min-height: 32px; padding: 4px 12px; border-radius: 999px; cursor: pointer; border: 2px solid var(--line); border-bottom-width: 3px; background: #fff; font-size: .8rem; font-weight: 800; color: var(--ink-dim); }
     .chip[aria-pressed="true"] { border-color: var(--blue-line); background: var(--blue-bg); color: var(--blue); }
-    .chip:active { transform: translateY(2px); border-bottom-width: 2px; }
+    .chip:active { transform: translateY(1px); border-bottom-width: 2px; }
 
     .fish-card.enter-next { animation: slideNext .28s ease-out; }
     .fish-card.enter-prev { animation: slidePrev .28s ease-out; }
@@ -156,6 +153,8 @@
     .hero.compact { aspect-ratio: 16 / 7; border-radius: 18px; }
     .hero .ph { width: 52%; height: auto; opacity: .5; }
     .hero.compact .ph { width: auto; height: 74%; }
+    .hero.compact.nophoto .ph { height: 50%; margin-top: -16px; }
+    .hero.compact .ph-note { top: auto; bottom: 8px; }
     .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .35s; }
     .hero-img.in { opacity: 1; }
     .hero .ph-note { position: absolute; left: 0; right: 0; top: 12px; display: none; justify-content: center; }
@@ -163,26 +162,15 @@
     .hero.has-img .ph { display: none; }
     .hero.nophoto .ph-note { display: flex; }
     .hero-retry { min-height: 40px; padding: 8px 16px; border-radius: 999px; border: 2px solid rgba(0,0,0,.08); background: rgba(255,255,255,.9); color: var(--ink-dim); font-size: .85rem; font-weight: 800; cursor: pointer; }
-    .hero-pill { position: absolute; left: 12px; bottom: 12px; padding: 7px 16px; font-size: .95rem; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+    .hero-pill { position: absolute; left: 10px; bottom: 10px; padding: 2px 10px; font-size: .72rem; border: 2px solid #fff; box-shadow: 0 1px 5px rgba(0,0,0,.25); }
 
     .fish-title { margin: 18px 2px 4px; }
     .fish-name { font-size: 2rem; font-weight: 900; line-height: 1.2; }
-    .fish-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-    .tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 999px; font-size: .85rem; font-weight: 900; background: var(--bg-soft); color: var(--ink-dim); }
-    .tag.in-season { background: var(--green-bg); color: var(--green-d); }
-    .tag.off-season { background: var(--bg-soft); color: var(--ink-dim); }
     .fish-summary { font-size: 1.05rem; line-height: 1.75; margin: 12px 2px 0; }
 
     .sec { margin-top: 22px; }
     .sec > h3 { margin: 0 2px 10px; font-size: 1.15rem; font-weight: 900; }
     .sec > .sub { margin: -4px 2px 10px; font-size: .88rem; color: var(--ink-dim); line-height: 1.5; }
-
-    .light-card { --c: var(--green); --t: var(--green-bg); --ci: var(--green-d); padding: 14px 16px 14px 18px; border-color: var(--c); background: var(--t); position: relative; }
-    .light-card.yellow { --c: var(--yellow); --t: var(--yellow-bg); --ci: var(--yellow-ink); }
-    .light-card.red    { --c: var(--red); --t: var(--red-bg); --ci: var(--red-d); }
-    .light-card .lt { font-size: 1.15rem; font-weight: 900; color: var(--ci); }
-    .light-card p { margin: 6px 0 0; line-height: 1.7; font-size: 1rem; color: var(--ink); }
-    .light-card p.warn { color: var(--red-d); font-weight: 900; }
 
     .season-status { margin: 0 2px 10px; font-size: 1rem; font-weight: 800; }
     .months { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; }
@@ -194,8 +182,7 @@
     .info-list { padding: 4px 16px; }
     .info-row { display: flex; gap: 14px; padding: 14px 0; border-bottom: 2px solid var(--line); }
     .info-row:last-child { border-bottom: 0; }
-    .info-row .ico { flex: 0 0 auto; font-size: 1.7rem; width: 36px; text-align: center; margin-top: 2px; }
-    .info-row .k { font-size: .82rem; color: var(--ink-dim); font-weight: 800; }
+        .info-row .k { font-size: .82rem; color: var(--ink-dim); font-weight: 800; }
     .info-row .v { font-size: 1.15rem; font-weight: 900; margin: 1px 0 3px; }
     .info-row .note { font-size: .92rem; line-height: 1.6; color: var(--ink-dim); }
 
@@ -229,12 +216,11 @@
     .combo.pop { animation: pop .35s ease-out; }
     @keyframes pop { 40% { transform: scale(1.35); } }
     .quiz-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 4px 18px 16px; display: flex; flex-direction: column; }
-    .quiz-prompt { font-size: 1.35rem; font-weight: 900; margin: 4px 0 14px; }
-    .quiz-ask { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .quiz-ask { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
     .quiz-ask .mascot { width: 84px; }
     .quiz-ask .bubble { flex: 1; }
     .quiz-ask .bubble strong { font-size: 1.3rem; font-weight: 900; display: block; margin-bottom: 2px; }
-    #quiz-fish { margin-bottom: 16px; }
+    #quiz-fish { margin: 6px 0 16px; }
     .choices { display: flex; flex-direction: column; gap: 12px; }
     .choice { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 60px; text-align: left; cursor: pointer; padding: 12px 16px; border-radius: 16px; background: #fff; color: var(--ink); border: 2px solid var(--line); border-bottom-width: 4px; font-size: 1.1rem; font-weight: 800; transition: transform .08s, border-bottom-width .08s; }
     .choice:active:not(:disabled) { transform: translateY(2px); border-bottom-width: 2px; }
@@ -291,7 +277,7 @@
     /* 矮螢幕（小尺寸手機）壓縮間距 */
     @media (max-height: 700px) {
         .home-hero { margin: 16px 0; }
-        .home-hero .mascot { width: 96px; }
+        .home-hero .mascot { width: 72px; }
         .quiz-ask .mascot { width: 64px; }
         #screen-result .mascot { width: 120px; }
     }
@@ -307,7 +293,7 @@
     <!-- 首頁 -->
     <section class="screen active" id="screen-home">
         <div class="home-head">
-            <div class="brand">魚類小教室</div>
+            <div class="brand">海鮮123</div>
             <button class="icon-btn" onclick="handleExit()" aria-label="離開">
                 <svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" fill="none"/></svg>
             </button>
@@ -316,16 +302,12 @@
             <div id="home-mascot"></div>
             <div class="bubble">嗨，我是小鰭！開玩遊戲前，先來認識台灣的海鮮吧。</div>
         </div>
-        <div class="stat-row">
-            <div class="card stat-pill">🐟 <b id="stat-count">–</b> 種魚</div>
-            <div class="card stat-pill">🏆 最佳 <b id="stat-best">–</b></div>
-        </div>
         <div class="mode-list">
             <button class="card mode study" id="mode-browse" onclick="goBrowse()" disabled>
                 <div class="tile">📖</div>
                 <div>
                     <div class="label">圖鑑瀏覽</div>
-                    <div class="desc">燈號原因、產季月份、漁法說明都在這</div>
+                    <div class="desc">盛產月份、漁法友善度、習性一次看</div>
                 </div>
                 <div class="chev"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
             </button>
@@ -380,12 +362,11 @@
             <div class="combo" id="quiz-combo">🔥 <span id="quiz-combo-n">0</span></div>
         </div>
         <div class="quiz-body scroll">
-            <div class="quiz-prompt">選出正確答案</div>
+            <div id="quiz-fish"></div>
             <div class="quiz-ask">
                 <div id="quiz-mascot"></div>
                 <div class="bubble"><strong id="quiz-fish-name"></strong><span id="quiz-question-text"></span></div>
             </div>
-            <div id="quiz-fish"></div>
             <div class="choices" id="quiz-choices"></div>
         </div>
         <div class="qfooter" id="quiz-footer">
@@ -431,12 +412,11 @@
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════
-   魚類知識小教室 — 獨立任務，不跟平台金幣/徽章/排行榜系統掛勾。
+   海鮮123 — 獨立任務，不跟平台金幣/徽章/排行榜系統掛勾。
    跟平台的通訊降到最低限度：只送 exit，不送 ready/complete/score。
    ═══════════════════════════════════════════════════════════════════ */
 
 const ZONE_LABEL = { coastal: '近海', pelagic: '遠洋', aquaculture: '養殖' };
-const ZONE_ICON  = { coastal: '🌊', pelagic: '🚢', aquaculture: '🏭' };
 const ZONE_NOTE  = {
     coastal: '離岸不遠的海域，多由沿岸和近海的漁船捕撈。',
     pelagic: '遠離陸地的大洋，要靠遠洋漁船出海較長時間才能捕到。',
@@ -451,7 +431,7 @@ const LIGHT_SHORT = { green: '綠燈・建議', yellow: '黃燈・想清楚', re
 const LIGHT_FISH_COLOR = { green: '#58cc02', yellow: '#ffc800', red: '#ff4b4b' };
 const LIGHT_DOT = { green: 'var(--green)', yellow: 'var(--yellow)', red: 'var(--red)' };
 
-/* 漁法說明：impact 是「一般而言」的海洋影響程度，實際依作業規模與方式而異 */
+/* 漁法說明：impact 是「一般而言」對海洋的友善程度，實際依作業規模與方式而異 */
 const METHOD_INFO = {
     '一支釣': { impact: 'good',  d: '一人一竿一鉤，釣到一尾算一尾，幾乎只會釣到想要的魚，對海洋的干擾小。' },
     '手釣':   { impact: 'good',  d: '用手拉著釣線釣魚，規模小、選擇性高，魚體受傷也少。' },
@@ -469,18 +449,13 @@ const METHOD_INFO = {
     '養殖':   { impact: 'farm',  d: '在池塘或箱網裡人工飼養，不直接捕撈野生族群，但要留意飼料與水質。' },
     '禁止捕撈': { impact: 'ban', d: '依規定不得捕撈，請不要購買或食用。' }
 };
-const IMPACT_LABEL = { good: '衝擊小', watch: '需留意', heavy: '衝擊大', ban: '禁止', farm: '人工養殖' };
-
-const LIGHT_INFO = {
-    green:  { title: '綠燈：建議選擇',   body: n => `圖鑑把${n}列為綠燈，可以優先選購。買的時候留意產季和來源標示，會更放心。` },
-    yellow: { title: '黃燈：想清楚再吃', body: n => `圖鑑把${n}列為黃燈。不是完全不能吃，但建議先看來源和漁法，偶爾吃就好，也避免買太小的個體。` },
-    red:    { title: '紅燈：盡量避免',   body: n => `圖鑑建議盡量避免${n}。購買前請多想一想，也可以改選下方的綠燈魚種。` }
-};
+const IMPACT_LABEL = { good: '友善', watch: '需留意', heavy: '不友善', ban: '禁止', farm: '人工養殖' };
 
 const SEASON_MONTHS = { '春': [3,4,5], '夏': [6,7,8], '秋': [9,10,11], '冬': [12,1,2] };
 const SIZE_REFS = [
-    { cm: 15, name: '手機長度' }, { cm: 30, name: '直尺長度' },
-    { cm: 85, name: '棒球棒長度' }, { cm: 170, name: '成人身高' }
+    { cm: 7,   name: '一根手指', adj: '長' }, { cm: 15,  name: '一支手機', adj: '長' },
+    { cm: 30,  name: '一把直尺', adj: '長' }, { cm: 85,  name: '一支棒球棒', adj: '長' },
+    { cm: 170, name: '一個成人的身高', adj: '長' }, { cm: 450, name: '一輛小客車', adj: '長' }
 ];
 const QUIZ_LENGTH = 10;
 
@@ -601,12 +576,10 @@ document.addEventListener('click', e => {
 
 /* ── 載入資料 ── */
 document.getElementById('home-mascot').innerHTML = mascot('normal');
-readBest();
 fetch('./fishDB.json')
     .then(r => r.json())
     .then(data => {
         fishDB = data;
-        document.getElementById('stat-count').textContent = data.length;
         document.getElementById('mode-browse').disabled = false;
         document.getElementById('mode-quiz').disabled = false;
     })
@@ -615,21 +588,6 @@ fetch('./fishDB.json')
             '<div class="card" style="padding:16px;color:var(--red-d);">資料載入失敗：' + escapeHtml(err.message) + '<br>請重新開啟頁面。</div>';
     });
 
-function readBest() {
-    let best = '–';
-    try { best = localStorage.getItem('fishguide_best') || '–'; } catch (e) {}
-    document.getElementById('stat-best').textContent = best;
-}
-function saveBest(score, total) {
-    try {
-        const prev = parseInt(localStorage.getItem('fishguide_best_n') || '-1', 10);
-        if (score > prev) {
-            localStorage.setItem('fishguide_best_n', String(score));
-            localStorage.setItem('fishguide_best', score + '/' + total);
-        }
-    } catch (e) {}
-    readBest();
-}
 function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -646,36 +604,36 @@ function seasonSet(season) {
 function sizeNote(cm) {
     let best = SIZE_REFS[0], d = Infinity;
     for (const r of SIZE_REFS) { const dd = Math.abs(Math.log(cm / r.cm)); if (dd < d) { d = dd; best = r; } }
-    const ratio = cm / best.cm;
-    if (ratio < 0.85) return `比${best.name}短一些。`;
-    if (ratio <= 1.15) return `和${best.name}差不多。`;
-    return `約是${best.name}的 ${ratio.toFixed(1)} 倍。`;
+    const ratio = cm / best.cm, n = best.name, a = best.adj, shorter = '短';
+    if (ratio < 0.5)  return `不到${n}的一半${a}`;
+    if (ratio < 0.85) return `比${n}${shorter}一些`;
+    if (ratio <= 1.15) return `和${n}差不多${a}`;
+    if (ratio < 1.6)  return `比${n}${a}一些`;
+    return `約是${n}的 ${ratio.toFixed(1)} 倍${a}`;
 }
 function seasonBlock(f) {
     const set = seasonSet(f.season);
     const now = new Date().getMonth() + 1;
     const inSeason = set.has(now);
     let status;
-    if (set.size === 12) status = '🎉 全年都可以買得到。';
-    else if (inSeason) status = '🎉 這個月正是產季。';
+    if (set.size === 12) status = '🎉 全年都是盛產期。';
+    else if (inSeason) status = '🎉 這個月正是盛產期。';
     else {
         let next = null;
         for (let i = 1; i <= 12; i++) { const m = ((now - 1 + i) % 12) + 1; if (set.has(m)) { next = m; break; } }
-        status = `這個月不是產季，下一次是 ${next} 月。`;
+        status = `這個月不是盛產期，下一次是 ${next} 月。`;
     }
     let cells = '';
     for (let m = 1; m <= 12; m++) cells += `<div class="m${set.has(m) ? ' on' : ''}${m === now ? ' now' : ''}">${m}</div>`;
     return { inSeason, html: `
         <div class="season-status">${status}</div>
-        <div class="months" role="img" aria-label="${escapeHtml(f.season)}產季">${cells}</div>
-        <div class="months-note">藍色是產季月份，橘框是這個月。春 3–5 月、夏 6–8 月、秋 9–11 月、冬 12–2 月，實際依年份和海況會有出入。</div>` };
+        <div class="months" role="img" aria-label="${escapeHtml(f.season)}盛產">${cells}</div>
+        <div class="months-note">藍色是盛產月份，橘框是這個月。春 3–5 月、夏 6–8 月、秋 9–11 月、冬 12–2 月，實際依年份和海況會有出入。</div>` };
 }
-function infoRow(icon, k, v, note) {
-    return `<div class="info-row"><span class="ico">${icon}</span><div><div class="k">${k}</div><div class="v">${v}</div><div class="note">${note}</div></div></div>`;
+function infoRow(k, v, note) {
+    return `<div class="info-row"><div><div class="k">${k}</div><div class="v">${v}</div>${note ? `<div class="note">${note}</div>` : ''}</div></div>`;
 }
 function fishDetailHTML(f) {
-    const li = LIGHT_INFO[f.light];
-    const banned = f.methods.includes('禁止捕撈');
     const season = seasonBlock(f);
 
     const methods = f.methods.map(m => {
@@ -691,7 +649,7 @@ function fishDetailHTML(f) {
         let pool = fishDB.filter(x => x.light === 'green' && x.zone === f.zone && x.id !== f.id);
         let sub = `同樣在${ZONE_LABEL[f.zone] || f.zone}的綠燈魚種，點一下看明細。`;
         if (pool.length < 2) { pool = fishDB.filter(x => x.light === 'green'); sub = '這些是綠燈魚種，點一下看明細。'; }
-        pool = pool.slice(0, 4);
+        pool = pickN(pool, 4);   // 同類太多時隨機挑 4 隻
         alts = `<div class="sec"><h3>可以改吃這些</h3><div class="sub">${sub}</div><div class="alts">` +
             pool.map(a => `<button class="card alt" data-id="${a.id}"><span class="dot"></span><span><div class="an">${escapeHtml(a.name)}</div><div class="ad">產季 ${escapeHtml(a.season)}・${escapeHtml(a.behavior)}</div></span><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></button>`).join('') +
             '</div></div>';
@@ -701,35 +659,22 @@ function fishDetailHTML(f) {
         ${heroHTML(f)}
         <div class="fish-title">
             <div class="fish-name">${escapeHtml(f.name)}</div>
-            <div class="fish-tags">
-                <span class="tag ${season.inSeason ? 'in-season' : 'off-season'}">${season.inSeason ? '🎉 現在是產季' : '🗓️ 產季 ' + escapeHtml(f.season)}</span>
-                <span class="tag">${ZONE_ICON[f.zone] || '🌊'} ${ZONE_LABEL[f.zone] || escapeHtml(f.zone)}</span>
-                <span class="tag">約 ${f.size} cm</span>
-            </div>
         </div>
         <p class="fish-summary">${escapeHtml(f.description)}</p>
 
-        <div class="sec"><h3>燈號說明</h3>
-            <div class="card light-card ${f.light}">
-                <div class="lt">${li.title}</div>
-                <p>${escapeHtml(li.body(f.name))}</p>
-                ${banned ? '<p class="warn">資料標示這種魚禁止捕撈，請不要購買或食用。</p>' : ''}
-            </div>
-        </div>
-
-        <div class="sec"><h3>什麼時候吃</h3>${season.html}</div>
+        <div class="sec"><h3>什麼時候盛產</h3>${season.html}</div>
 
         <div class="sec"><h3>基本資料</h3>
             <div class="card info-list">
-                ${infoRow('🗓️', '產季', escapeHtml(f.season), '同一種魚在產季買，通常比較容易買到、價格也比較穩。')}
-                ${infoRow('📏', '體長', `約 ${f.size} cm`, sizeNote(f.size))}
-                ${infoRow('🧭', '習性', escapeHtml(f.behavior), escapeHtml(BEHAVIOR_NOTE[f.behavior] || ''))}
-                ${infoRow(ZONE_ICON[f.zone] || '🌊', '分布', ZONE_LABEL[f.zone] || escapeHtml(f.zone), escapeHtml(ZONE_NOTE[f.zone] || ''))}
+                ${infoRow('產季', escapeHtml(f.season), '同一種魚在產季買，通常比較容易買到、價格也比較穩。')}
+                ${infoRow('體長', sizeNote(f.size), '')}
+                ${infoRow('習性', escapeHtml(f.behavior), escapeHtml(BEHAVIOR_NOTE[f.behavior] || ''))}
+                ${infoRow('分布', ZONE_LABEL[f.zone] || escapeHtml(f.zone), escapeHtml(ZONE_NOTE[f.zone] || ''))}
             </div>
         </div>
 
         <div class="sec"><h3>怎麼捕來的</h3>
-            <div class="sub">「衝擊」是一般情形下對海洋的影響，實際會依作業規模與方式不同。</div>
+            <div class="sub">「友善」是指一般情形下對海洋和其他生物的影響小，實際會依作業規模與方式不同。</div>
             <div class="method-list">${methods}</div>
         </div>
         ${alts}`;
@@ -928,7 +873,6 @@ function showQuizResult() {
     document.getElementById('rs-score').textContent = quizScore + '/' + total;
     document.getElementById('rs-acc').textContent = Math.round(ratio * 100) + '%';
     document.getElementById('rs-streak').textContent = quizMaxStreak;
-    saveBest(quizScore, total);
     if (ratio >= 0.7) confetti();
 }
 function confetti() {
